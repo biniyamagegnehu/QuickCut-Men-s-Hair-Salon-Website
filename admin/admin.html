@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickCut - Admin Panel</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Chart.js for statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Admin CSS -->
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-brand">
+                <i class="fas fa-cut me-2"></i>QuickCut Admin
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#appointments">
+                        <i class="fas fa-calendar-alt"></i>
+                        Appointments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#queue">
+                        <i class="fas fa-list-ol"></i>
+                        Queue Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#barbers">
+                        <i class="fas fa-user-tie"></i>
+                        Barbers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#services">
+                        <i class="fas fa-cut"></i>
+                        Services
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#customers">
+                        <i class="fas fa-users"></i>
+                        Customers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#reports">
+                        <i class="fas fa-chart-bar"></i>
+                        Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#settings">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            <div class="admin-profile">
+                <div class="admin-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="admin-info">
+                    <h6 class="mb-0">Admin User</h6>
+                    <small class="text-muted">Administrator</small>
+                </div>
+                <a href="welcome.html" class="logout-btn ms-auto" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <button class="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search...">
+            </div>
+            <div class="top-nav-items">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </button>
+                <button class="fullscreen-btn">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <div class="date-time">
+                    <span id="current-date"></span>
+                    <span id="current-time"></span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Content -->
+        <div class="content-wrapper">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+                    <p class="text-muted">Quick overview of your barber shop performance</p>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card">
+                            <div class="stats-icon bg-primary">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3 id="today-appointments">24</h3>
+                                <p>Today's Appointments</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card">
+                            <div class="stats-icon bg-success">
+                                <i class="fas fa-user-clock"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3 id="current-queue">8</h3>
+                                <p>Current Queue</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card">
+                            <div class="stats-icon bg-warning">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3 id="today-revenue">$850</h3>
+                                <p>Today's Revenue</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card">
+                            <div class="stats-icon bg-info">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3 id="active-barbers">6</h3>
+                                <p>Active Barbers</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Row -->
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Weekly Revenue</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="revenueChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Service Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="serviceChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Appointments & Queue -->
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Recent Appointments</h5>
+                                <button class="btn btn-sm btn-primary">View All</button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Customer</th>
+                                                <th>Service</th>
+                                                <th>Time</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recent-appointments">
+                                            <!-- Appointments will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Current Queue</h5>
+                                <button class="btn btn-sm btn-primary" id="refresh-queue">Refresh</button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="queue-list">
+                                    <!-- Queue items will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Appointments Section -->
+            <section id="appointments" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-alt me-2"></i>Appointments</h2>
+                    <p class="text-muted">Manage all appointments</p>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">All Appointments</h5>
+                                    <div>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+                                            <i class="fas fa-plus me-2"></i>Add Appointment
+                                        </button>
+                                        <button class="btn btn-outline-secondary">
+                                            <i class="fas fa-download me-2"></i>Export
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table" id="appointments-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Customer</th>
+                                                <th>Service</th>
+                                                <th>Barber</th>
+                                                <th>Date & Time</th>
+                                                <th>Status</th>
+                                                <th>Amount</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Appointments data will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Queue Management Section -->
+            <section id="queue" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list-ol me-2"></i>Queue Management</h2>
+                    <p class="text-muted">Manage customer queue in real-time</p>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Live Queue</h5>
+                                <div class="live-indicator">
+                                    <span class="dot"></span>
+                                    <small>LIVE</small>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="queue-management">
+                                    <div class="queue-header">
+                                        <div class="queue-stats">
+                                            <div class="stat">
+                                                <span class="number" id="queue-total">12</span>
+                                                <span class="label">Total in Queue</span>
+                                            </div>
+                                            <div class="stat">
+                                                <span class="number" id="queue-waiting">8</span>
+                                                <span class="label">Waiting</span>
+                                            </div>
+                                            <div class="stat">
+                                                <span class="number" id="queue-serving">3</span>
+                                                <span class="label">Being Served</span>
+                                            </div>
+                                            <div class="stat">
+                                                <span class="number" id="avg-wait-time">15</span>
+                                                <span class="label">Avg Wait (min)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="queue-container">
+                                        <div class="queue-category">
+                                            <h6>Being Served</h6>
+                                            <div class="queue-items serving">
+                                                <!-- Serving items -->
+                                            </div>
+                                        </div>
+                                        <div class="queue-category">
+                                            <h6>Waiting</h6>
+                                            <div class="queue-items waiting">
+                                                <!-- Waiting items -->
+                                            </div>
+                                        </div>
+                                        <div class="queue-category">
+                                            <h6>Next in Line</h6>
+                                            <div class="queue-items next">
+                                                <!-- Next items -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Queue Controls</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="queue-controls">
+                                    <button class="btn btn-primary w-100 mb-3" id="add-to-queue">
+                                        <i class="fas fa-user-plus me-2"></i>Add to Queue
+                                    </button>
+                                    <button class="btn btn-success w-100 mb-3" id="call-next">
+                                        <i class="fas fa-user-check me-2"></i>Call Next Customer
+                                    </button>
+                                    <button class="btn btn-warning w-100 mb-3" id="mark-no-show">
+                                        <i class="fas fa-user-times me-2"></i>Mark as No Show
+                                    </button>
+                                    <button class="btn btn-danger w-100 mb-3" id="clear-queue">
+                                        <i class="fas fa-trash me-2"></i>Clear Queue
+                                    </button>
+                                    
+                                    <div class="queue-settings mt-4">
+                                        <h6>Queue Settings</h6>
+                                        <div class="form-group">
+                                            <label class="form-label">Estimated Service Time (minutes)</label>
+                                            <input type="number" class="form-control" id="service-time" value="30" min="10" max="60">
+                                        </div>
+                                        <div class="form-group mt-3">
+                                            <label class="form-label">Max Queue Size</label>
+                                            <input type="number" class="form-control" id="max-queue" value="15" min="5" max="30">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Barbers Section -->
+            <section id="barbers" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-user-tie me-2"></i>Barbers Management</h2>
+                    <p class="text-muted">Manage your barbers and their schedules</p>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">All Barbers</h5>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBarberModal">
+                                        <i class="fas fa-plus me-2"></i>Add Barber
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row" id="barbers-list">
+                                    <!-- Barbers will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section id="services" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cut me-2"></i>Services Management</h2>
+                    <p class="text-muted">Manage your services and pricing</p>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">All Services</h5>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+                                        <i class="fas fa-plus me-2"></i>Add Service
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table" id="services-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Service</th>
+                                                <th>Description</th>
+                                                <th>Duration</th>
+                                                <th>Price</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Services will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Customers Section -->
+            <section id="customers" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users me-2"></i>Customers</h2>
+                    <p class="text-muted">Manage customer information and history</p>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">All Customers</h5>
+                                    <div>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+                                            <i class="fas fa-plus me-2"></i>Add Customer
+                                        </button>
+                                        <button class="btn btn-outline-secondary">
+                                            <i class="fas fa-filter me-2"></i>Filter
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table" id="customers-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Phone</th>
+                                                <th>Appointments</th>
+                                                <th>Total Spent</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Customers will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar me-2"></i>Reports & Analytics</h2>
+                    <p class="text-muted">View detailed reports and analytics</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Revenue Report</h5>
+                                <div class="report-period">
+                                    <select class="form-select" id="report-period">
+                                        <option value="week">This Week</option>
+                                        <option value="month">This Month</option>
+                                        <option value="quarter">This Quarter</option>
+                                        <option value="year">This Year</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="detailedRevenueChart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Top Services</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="topServicesChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Customer Retention</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="retentionChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cog me-2"></i>Settings</h2>
+                    <p class="text-muted">Configure your barber shop settings</p>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">General Settings</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="settings-form">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Shop Name</label>
+                                            <input type="text" class="form-control" value="QuickCut Barber Shop">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Shop Phone</label>
+                                            <input type="text" class="form-control" value="(555) 123-4567">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Shop Address</label>
+                                            <input type="text" class="form-control" value="123 Main Street, Downtown">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Opening Time</label>
+                                            <input type="time" class="form-control" value="09:00">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Closing Time</label>
+                                            <input type="time" class="form-control" value="20:00">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Slot Duration (minutes)</label>
+                                            <input type="number" class="form-control" value="30" min="15" max="60">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Max Appointments per Slot</label>
+                                            <input type="number" class="form-control" value="3" min="1" max="10">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Shop Description</label>
+                                            <textarea class="form-control" rows="3">Skip the wait. Get the cut. QuickCut makes hair appointments fast, easy, and convenient.</textarea>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-primary">Save Settings</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Notification Settings</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="email-notifications" checked>
+                                    <label class="form-check-label" for="email-notifications">Email Notifications</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="sms-notifications" checked>
+                                    <label class="form-check-label" for="sms-notifications">SMS Notifications</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="queue-notifications" checked>
+                                    <label class="form-check-label" for="queue-notifications">Queue Updates</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="reminder-notifications" checked>
+                                    <label class="form-check-label" for="reminder-notifications">Appointment Reminders</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">System Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="system-status">
+                                    <div class="status-item">
+                                        <span class="status-label">Queue System</span>
+                                        <span class="status-indicator active"></span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">Booking System</span>
+                                        <span class="status-indicator active"></span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">Payment System</span>
+                                        <span class="status-indicator active"></span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">Notification System</span>
+                                        <span class="status-indicator active"></span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">Database</span>
+                                        <span class="status-indicator active"></span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-primary w-100 mt-3">
+                                    <i class="fas fa-sync me-2"></i>Check System Status
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Add Appointment Modal -->
+    <div class="modal fade" id="addAppointmentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Appointment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Barber Modal -->
+    <div class="modal fade" id="addBarberModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Barber</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Service Modal -->
+    <div class="modal fade" id="addServiceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Service</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Customer Modal -->
+    <div class="modal fade" id="addCustomerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Customer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Admin JS -->
+    <script src="admin.js"></script>
+</body>
+</html>
