@@ -1,0 +1,51 @@
+/* appointments.css - Appointments specific styles */
+
+/* Appointment Filters */
+#filter-date, #filter-status, #filter-barber {
+    cursor: pointer;
+}
+
+/* Appointments Table */
+#appointments-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+#appointments-table tbody tr:hover {
+    background-color: rgba(255, 107, 53, 0.05);
+}
+
+/* Appointment Status Colors */
+.appointment-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-scheduled-badge { background: rgba(23, 162, 184, 0.1); color: var(--info-color); }
+.status-confirmed-badge { background: rgba(255, 107, 53, 0.1); color: var(--primary-color); }
+.status-in-progress-badge { background: rgba(255, 193, 7, 0.1); color: var(--warning-color); }
+.status-completed-badge { background: rgba(40, 167, 69, 0.1); color: var(--success-color); }
+.status-cancelled-badge { background: rgba(220, 53, 69, 0.1); color: var(--danger-color); }
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #adb5bd;
+}

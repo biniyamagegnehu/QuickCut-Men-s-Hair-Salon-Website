@@ -1,0 +1,135 @@
+/* barbers.css - Barbers specific styles */
+
+/* Barbers Grid */
+#barbers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.barber-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    height: 100%;
+}
+
+.barber-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+.barber-header {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.barber-avatar {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 107, 53, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.barber-info {
+    flex: 1;
+}
+
+.barber-info h5 {
+    margin-bottom: 0.5rem;
+    color: var(--secondary-color);
+}
+
+.barber-info p {
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.barber-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-active { background: rgba(40, 167, 69, 0.1); color: var(--success-color); }
+.status-inactive { background: rgba(108, 117, 125, 0.1); color: var(--secondary-color); }
+.status-vacation { background: rgba(255, 193, 7, 0.1); color: var(--warning-color); }
+
+.barber-body {
+    padding: 1.5rem;
+}
+
+.barber-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.barber-stat {
+    text-align: center;
+}
+
+.barber-stat .number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: block;
+}
+
+.barber-stat .label {
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+    opacity: 0.8;
+}
+
+.barber-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.barber-actions .btn {
+    flex: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    #barbers-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    #barbers-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .barber-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .barber-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

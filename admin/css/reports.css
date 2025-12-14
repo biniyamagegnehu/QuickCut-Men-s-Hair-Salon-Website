@@ -1,0 +1,70 @@
+/* reports.css - Reports specific styles */
+
+/* Report Summary */
+.report-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.summary-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.summary-item .label {
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.summary-item .value {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Report Filters */
+#report-type, #report-period, #report-start, #report-end {
+    cursor: pointer;
+}
+
+/* Empty Report State */
+.empty-report {
+    text-align: center;
+    padding: 4rem 1rem;
+}
+
+.empty-report i {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.empty-report h4 {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.empty-report p {
+    color: #adb5bd;
+    max-width: 400px;
+    margin: 0 auto;
+}

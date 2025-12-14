@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickCut - Settings</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="sidebar-brand">
+                <i class="fas fa-cut me-2"></i>QuickCut Admin
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="appointments.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        Appointments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="barbers.html">
+                        <i class="fas fa-user-tie"></i>
+                        Barbers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="services.html">
+                        <i class="fas fa-cut"></i>
+                        Services
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="customers.html">
+                        <i class="fas fa-users"></i>
+                        Customers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="reports.html">
+                        <i class="fas fa-chart-bar"></i>
+                        Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            <div class="admin-profile">
+                <div class="admin-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="admin-info">
+                    <h6 class="mb-0">Admin User</h6>
+                    <small class="text-muted">Administrator</small>
+                </div>
+                <a href="../welcome.html" class="logout-btn ms-auto" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <button class="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search..." id="global-search">
+            </div>
+            <div class="top-nav-items">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notification-count">3</span>
+                </button>
+                <button class="fullscreen-btn">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <div class="date-time">
+                    <span id="current-date"></span>
+                    <span id="current-time"></span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <div class="section-header">
+                <h2><i class="fas fa-cog me-2"></i>Settings</h2>
+                <p class="text-muted">Configure your barber shop settings</p>
+            </div>
+            
+            <!-- Settings Form -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">General Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="settings-form">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Shop Name</label>
+                                        <input type="text" class="form-control" id="shop-name" value="QuickCut Barber Shop" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Shop Phone</label>
+                                        <input type="text" class="form-control" id="shop-phone" value="0912345678" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Shop Address</label>
+                                        <input type="text" class="form-control" id="shop-address" value="123 Main Street, Downtown" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Opening Time</label>
+                                        <input type="time" class="form-control" id="opening-time" value="09:00" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Closing Time</label>
+                                        <input type="time" class="form-control" id="closing-time" value="20:00" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Slot Duration (minutes)</label>
+                                        <input type="number" class="form-control" id="slot-duration" value="30" min="15" max="60" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Max Appointments per Slot</label>
+                                        <input type="number" class="form-control" id="max-appointments" value="3" min="1" max="10" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Shop Description</label>
+                                        <textarea class="form-control" id="shop-description" rows="3">Skip the wait. Get the cut. QuickCut makes hair appointments fast, easy, and convenient.</textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <!-- Notification Settings -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Notification Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="email-notifications" checked>
+                                <label class="form-check-label" for="email-notifications">Email Notifications</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="sms-notifications" checked>
+                                <label class="form-check-label" for="sms-notifications">SMS Notifications</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="appointment-reminders" checked>
+                                <label class="form-check-label" for="appointment-reminders">Appointment Reminders</label>
+                            </div>
+                            <button class="btn btn-outline-primary w-100 mt-2" id="save-notifications">
+                                Save Notification Settings
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- System Status -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">System Status</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="system-status">
+                                <div class="status-item">
+                                    <span class="status-label">Booking System</span>
+                                    <span class="status-indicator active"></span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">Payment System</span>
+                                    <span class="status-indicator active"></span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">Notification System</span>
+                                    <span class="status-indicator active"></span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">Database</span>
+                                    <span class="status-indicator active"></span>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary w-100 mt-3" id="check-status">
+                                <i class="fas fa-sync me-2"></i>Check System Status
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript Files -->
+    <script src="js/common.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+</html>

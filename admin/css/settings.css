@@ -1,0 +1,98 @@
+/* settings.css - Settings specific styles */
+
+/* System Status */
+.system-status {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.status-item:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.status-label {
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.status-indicator.active {
+    background: var(--success-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Form Switches */
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.25);
+}
+
+/* Settings Sections */
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section:last-child {
+    margin-bottom: 0;
+}
+
+.settings-section h5 {
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--light-color);
+}
+
+/* Time Inputs */
+input[type="time"] {
+    font-family: monospace;
+}
+
+/* Form Help Text */
+.form-text {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Save Button */
+#save-settings {
+    min-width: 150px;
+}
+
+/* Reset Button */
+.btn-reset {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.btn-reset:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
