@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickCut - Professional Barber Services</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/welcome.css">
+</head>
+<body id="main-body">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="main-nav">
+        <div class="container">
+            <a class="navbar-brand logo" href="welcome.html" id="logo">
+                <i class="fas fa-cut me-2"></i>QuickCut
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" id="menu-toggle">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto" id="nav-menu">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="welcome.html"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="aboutus.html"><i class="fas fa-info-circle me-1"></i>About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                    </li>
+                </ul>
+                <a href="login.html" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="book-now-btn">
+                    <i class="fas fa-scissors me-1"></i>Book Now
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-7">
+                    <div class="hero-content">
+                        <h1 class="display-1 fw-bold mb-4" id="hero-title">
+                            Welcome to <span class="text-primary">QuickCut</span>
+                        </h1>
+                        <h2 class="display-4 fw-light mb-4" id="hero-tagline">Skip the wait. <span class="fw-bold">Get the cut.</span></h2>
+                        <p class="lead mb-5" id="hero-description">Professional grooming services tailored for the modern man. Book online and avoid long queues with our real-time scheduling system.</p>
+                        <div class="d-flex flex-wrap gap-3 hero-buttons">
+                            <a href="login.html" class="btn btn-primary btn-lg px-5 py-3" id="book-appointment-btn">
+                                <i class="fas fa-calendar-check me-2"></i>Book Appointment Now
+                            </a>
+                            <a href="login.html" class="btn btn-outline-light btn-lg px-5 py-3" id="view-queue-btn">
+                                <i class="fas fa-clock me-2"></i>View Live Queue
+                            </a>
+                        </div>
+                        <div class="hero-stats mt-5 pt-4" id="hero-stats">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <h3 class="fw-bold text-primary" id="clients-count">5000+</h3>
+                                    <p class="text-light">Happy Clients</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h3 class="fw-bold text-primary" id="satisfaction-rate">98%</h3>
+                                    <p class="text-light">Satisfaction Rate</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h3 class="fw-bold text-primary" id="wait-time">15 min</h3>
+                                    <p class="text-light">Avg. Wait Time</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h3 class="fw-bold text-primary" id="barbers-count">50+</h3>
+                                    <p class="text-light">Expert Barbers</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="hero-image-container">
+                        <div class="queue-card glass-card" id="queue-card">
+                            <div class="queue-header">
+                                <h3 class="text-white">
+                                    <i class="fas fa-users me-2"></i>Live Queue Status
+                                </h3>
+                                <div class="live-indicator">
+                                    <span class="dot"></span>
+                                    <small>LIVE</small>
+                                </div>
+                            </div>
+                            <div class="queue-body">
+                                <div class="next-slot text-center mb-4">
+                                    <h4 class="text-light">Next Available Slot</h4>
+                                    <h2 class="display-3 fw-bold text-primary" id="next-slot-time">3:15 PM</h2>
+                                    <p class="text-light">Estimated wait time</p>
+                                </div>
+                                <div class="queue-info">
+                                    <div class="queue-item">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h5 class="fw-bold text-light">Currently Waiting</h5>
+                                                <p class="text-muted">In queue right now</p>
+                                            </div>
+                                            <div class="text-end">
+                                                <h2 class="fw-bold text-primary" id="waiting-count">3</h2>
+                                            </div>
+                                        </div>
+                                        <div class="queue-visual mt-3" id="queue-visual">
+                                            <div class="queue-dots" id="queue-dots">
+                                                <div class="queue-dot active"></div>
+                                                <div class="queue-dot active"></div>
+                                                <div class="queue-dot active"></div>
+                                                <div class="queue-dot"></div>
+                                                <div class="queue-dot"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="login.html" class="btn btn-light w-100 py-3 mt-4" id="refresh-queue">
+                                    <i class="fas fa-sync-alt me-2"></i>Refresh Queue Status
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="scroll-indicator" id="scroll-indicator">
+            <a href="#services">
+                <i class="fas fa-chevron-down"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services-section py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h6 class="text-primary text-uppercase fw-bold">Our Premium Services</h6>
+                <h2 class="display-4 fw-bold">Professional Grooming</h2>
+                <p class="lead text-muted">Tailored for the modern man</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="service-card" data-service="haircut" id="haircut-service">
+                        <div class="service-image haircut"></div>
+                        <div class="service-content">
+                            <div class="service-icon">
+                                <i class="fas fa-cut"></i>
+                            </div>
+                            <h4 class="fw-bold">Classic Haircut</h4>
+                            <div class="price-tag">
+                                <span class="price">$25</span>
+                                <span class="duration">30-45 min</span>
+                            </div>
+                            <p class="text-muted">Professional men's haircut with styling, trimming, and finishing products</p>
+                            <ul class="service-features">
+                                <li><i class="fas fa-check text-primary me-2"></i>Precision cutting</li>
+                                <li><i class="fas fa-check text-primary me-2"></i>Styling & products</li>
+                                <li><i class="fas fa-check text-primary me-2"></i>Free consultation</li>
+                            </ul>
+                            <a href="login.html" class="btn btn-outline-primary w-100 mt-3" id="book-haircut">Book This Service</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="service-card featured" data-service="beard" id="beard-service">
+                        <div class="service-image beard"></div>
+                        <div class="service-content">
+                            <div class="service-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h4 class="fw-bold">Beard Trim & Shape</h4>
+                            <div class="price-tag">
+                                <span class="price">$15</span>
+                                <span class="duration">15-20 min</span>
+                            </div>
+                            <p class="text-muted">Precision beard shaping and trim with hot towel treatment and oils</p>
+                            <ul class="service-features">
+                                <li><i class="fas fa-check text-primary me-2"></i>Hot towel treatment</li>
+                                <li><i class="fas fa-check text-primary me-2"></i>Beard oil & balm</li>
+                                <li><i class="fas fa-check text-primary me-2"></i>Detailed shaping</li>
+                            </ul>
+                            <a href="login.html" class="btn btn-primary w-100 mt-3" id="book-beard">Book This Service</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="service-card" data-service="premium" id="premium-service">
+                        <div class="service-image premium"></div>
+                        <div class="service-content">
+                            <div class="service-icon">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <h4 class="fw-bold">Premium Package</h4>
+                            <div class="price-tag">
+                                <span class="price">$35</span>
+                                <span class="duration">45-60 min</span>
+                            </div>
+                            <p class="text-muted">Complete grooming experience with haircut, beard trim, and facial care</p>
+                            <ul class="service-features">
+                                <li><i class="fas fa-check text-primary me-2"></i>Haircut + Beard</li>
+                                <li><i class="fas fa-check text-primary me-2"></i>Hot towel facial</li>
+                                <li><i class="fas fa-check text-primary me-2"></i>Premium products</li>
+                            </ul>
+                            <a href="login.html" class="btn btn-outline-primary w-100 mt-3" id="book-premium">Book This Service</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="why-section py-5 bg-dark text-white" id="why-us">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="why-image"></div>
+                </div>
+                <div class="col-lg-6">
+                    <h6 class="text-primary text-uppercase fw-bold mb-3">Why Choose Us</h6>
+                    <h2 class="display-5 fw-bold mb-4">Experience the <span class="text-primary">QuickCut</span> Difference</h2>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="feature-box">
+                                <div class="feature-icon">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <h5 class="fw-bold mt-3">Expert Barbers</h5>
+                                <p class="text-light small">Skilled professionals with years of experience and continuous training</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-box">
+                                <div class="feature-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <h5 class="fw-bold mt-3">No Long Waits</h5>
+                                <p class="text-light small">Real-time queue system that saves your valuable time and reduces waiting</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-box">
+                                <div class="feature-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <h5 class="fw-bold mt-3">Online Booking</h5>
+                                <p class="text-light small">Book your slot easily from any device with our user-friendly platform</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-box">
+                                <div class="feature-icon">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                                <h5 class="fw-bold mt-3">Premium Service</h5>
+                                <p class="text-light small">High-quality products and excellent customer service guaranteed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <a href="login.html" class="btn btn-primary btn-lg px-5 py-3" id="book-first-appointment">
+                            <i class="fas fa-calendar-plus me-2"></i>Book Your First Appointment
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="cta">
+        <div class="container">
+            <div class="cta-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h2 class="display-5 fw-bold mb-3" id="cta-title">Ready for a Fresh Look?</h2>
+                        <p class="lead mb-0" id="cta-description">
+                            Book your appointment now and skip the wait. Our expert barbers are ready to give you the perfect cut.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <a href="login.html" class="btn btn-light btn-lg px-5 py-3" id="schedule-now-btn">
+                            <i class="fas fa-calendar-plus me-2"></i>Schedule Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section" id="footer">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h4 class="fw-bold mb-3 logo" id="footer-logo">
+                        <i class="fas fa-cut me-2"></i>QuickCut
+                    </h4>
+                    <p class="text-light small mb-3" id="footer-description">
+                        Skip the wait. Get the cut. QuickCut makes hair appointments fast, easy, and convenient with our modern booking system.
+                    </p>
+                    <div class="social-links mt-4">
+                        <a href="#" class="social-link" id="facebook-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link" id="twitter-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" id="instagram-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link" id="tiktok-link">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="fw-bold mb-3">Contact Us</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <div class="d-flex">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="fw-bold">Phone Number</h6>
+                                    <p class="text-light small">(555) 123-4567</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-3">
+                            <div class="d-flex">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="fw-bold">Email Address</h6>
+                                    <p class="text-light small">info@quickcut.com</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="fw-bold">Location</h6>
+                                    <p class="text-light small">123 Main Street, Downtown</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-4">
+                    <h5 class="fw-bold mb-3">Working Hours</h5>
+                    <div class="hours-list" id="hours-list">
+                        <div class="hour-item">
+                            <span>Monday - Friday</span>
+                            <span>9:00 AM - 8:00 PM</span>
+                        </div>
+                        <div class="hour-item">
+                            <span>Saturday</span>
+                            <span>9:00 AM - 6:00 PM</span>
+                        </div>
+                        <div class="hour-item">
+                            <span>Sunday</span>
+                            <span>10:00 AM - 4:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-4 bg-light">
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 text-light small" id="copyright">
+                        © 2025 QuickCut. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-light small text-decoration-none me-3" id="privacy-policy">Privacy Policy</a>
+                    <a href="#" class="text-light small text-decoration-none" id="terms-service">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="btn btn-primary scroll-to-top" style="display: none;" id="back-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>
