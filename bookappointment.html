@@ -10,6 +10,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/bookappointment.css">
+    <!-- Payment styles -->
+    <style>
+        .payment-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f7fbff 100%);
+            border: 1px solid #e6eef8;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(13,110,253,0.06);
+        }
+
+        .payment-section h5 {
+            font-weight: 600;
+            color: #0d6efd;
+        }
+
+        .payment-section .form-check {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eef6ff;
+        }
+
+        .payment-section .form-check:last-of-type { border-bottom: none; }
+
+        .payment-details {
+            background: #ffffff;
+            border-left: 3px solid rgba(13,110,253,0.06);
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        #telebirr-phone, #cbe-ref, #bank-ref {
+            border-radius: 8px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .payment-small-note { font-size: 0.85rem; color: #6c757d; }
+
+        .is-invalid { border-color: #dc3545 !important; }
+
+        @media (max-width: 768px) {
+            .payment-section { padding: 12px; }
+        }
+    </style>
 </head>
 <body id="booking-body">
     <!-- Navigation -->
@@ -80,7 +123,7 @@
                 <div class="col-lg-8" id="booking-left-column">
                     <div class="booking-form-card" id="booking-form-card">
                         <!-- Progress -->
-                        <div class="booking-progress" id="booking-progress">
+                        <div class="booking-progress" id="ooking-progress">
                             <div class="progress-step active" id="progress-step-1">
                                 <span>1</span>
                                 <div class="step-label">Personal Info</div>
@@ -96,6 +139,10 @@
                             <div class="progress-step" id="progress-step-4">
                                 <span>4</span>
                                 <div class="step-label">Confirm</div>
+                            </div>
+                            <div class="progress-step" id="progress-step-4">
+                                <span>5</span>
+                                <div class="step-label">payment</div>
                             </div>
                         </div>
 
@@ -145,7 +192,7 @@
                                                 <h4 id="service-1-title">Haircut</h4>
                                                 <p id="service-1-desc">Professional men's haircut with styling</p>
                                                 <div class="service-price">
-                                                    <span class="price" id="service-1-price">$25</span>
+                                                    <span class="price" id="service-1-price">250 Birr</span>
                                                     <span class="duration" id="service-1-duration">30-45 min</span>
                                                 </div>
                                             </div>
@@ -162,7 +209,7 @@
                                                 <h4 id="service-2-title">Beard Trim</h4>
                                                 <p id="service-2-desc">Precision beard shaping and trim</p>
                                                 <div class="service-price">
-                                                    <span class="price" id="service-2-price">$15</span>
+                                                    <span class="price" id="service-2-price">150 Birr</span>
                                                     <span class="duration" id="service-2-duration">15-20 min</span>
                                                 </div>
                                             </div>
@@ -179,7 +226,7 @@
                                                 <h4 id="service-3-title">Premium Package</h4>
                                                 <p id="service-3-desc">Haircut + Beard trim + Facial</p>
                                                 <div class="service-price">
-                                                    <span class="price" id="service-3-price">$35</span>
+                                                    <span class="price" id="service-3-price">350 Birr</span>
                                                     <span class="duration" id="service-3-duration">45-60 min</span>
                                                 </div>
                                             </div>
@@ -190,7 +237,7 @@
 
                             <!-- Barber Selection -->
                             <div class="form-section" id="barber-selection-section">
-                                <h3><i class="fas fa-user-tie me-2 text-primary"></i>Select Barber *</h3>
+                                <h3><i class="fas fa-user-tie me-2 text-primary"></i>Select Barber </h3>
                                 <div class="barber-options" id="barber-options">
                                     <div class="barber-option" id="barber-option-1">
                                         <input type="radio" name="barber" id="barber1" value="john" required>
@@ -200,18 +247,11 @@
                                             </div>
                                             <div class="barber-details">
                                                 <h5 id="barber-1-name">John Master</h5>
-                                                <p class="barber-specialty" id="barber-1-specialty">Haircut Specialist</p>
-                                                <div class="barber-rating">
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <span class="rating-text" id="barber-1-rating">4.9 (120 reviews)</span>
-                                                </div>
+                                                
+                                                
                                             </div>
                                             <div class="barber-status available">
-                                                <i class="fas fa-circle"></i> Available
+                                                <i class="fas fa-circle"></i>
                                             </div>
                                         </label>
                                     </div>
@@ -224,18 +264,11 @@
                                             </div>
                                             <div class="barber-details">
                                                 <h5 id="barber-2-name">Mike Style</h5>
-                                                <p class="barber-specialty" id="barber-2-specialty">Beard Specialist</p>
-                                                <div class="barber-rating">
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star-half-alt text-warning"></i>
-                                                    <span class="rating-text" id="barber-2-rating">4.7 (95 reviews)</span>
-                                                </div>
+                                              
+                                             
                                             </div>
                                             <div class="barber-status available">
-                                                <i class="fas fa-circle"></i> Available
+                                                <i class="fas fa-circle"></i>
                                             </div>
                                         </label>
                                     </div>
@@ -249,17 +282,10 @@
                                             <div class="barber-details">
                                                 <h5 id="barber-3-name">Alex Cut</h5>
                                                 <p class="barber-specialty" id="barber-3-specialty">Modern Styles</p>
-                                                <div class="barber-rating">
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <span class="rating-text" id="barber-3-rating">5.0 (150 reviews)</span>
-                                                </div>
+                                              
                                             </div>
                                             <div class="barber-status busy">
-                                                <i class="fas fa-circle"></i> Busy
+                                                <i class="fas fa-circle"></i> 
                                             </div>
                                         </label>
                                     </div>
@@ -270,14 +296,14 @@
                             <div class="form-section" id="datetime-section">
                                 <div class="row">
                                     <div class="col-md-6 mb-4">
-                                        <h4><i class="fas fa-calendar me-2 text-primary"></i>Select Date *</h4>
+                                        
                                         <div class="date-picker" id="date-picker">
                                             <div class="date-option" id="date-option-1">
                                                 <input type="radio" name="date" id="today" value="today" required>
                                                 <label for="today">
                                                     <span class="date-day">Today</span>
                                                     <span class="date-full">Available slots</span>
-                                                    <span class="badge available" id="today-slots">4 slots</span>
+                                                    <span class="badge available" id="today-slots">12 slots</span>
                                                 </label>
                                             </div>
                                             <div class="date-option" id="date-option-2">
@@ -300,7 +326,7 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <h4><i class="fas fa-clock me-2 text-primary"></i>Select Time *</h4>
+                 
                                         <div class="time-slots" id="time-slots">
                                             <div class="time-option" id="time-option-1">
                                                 <input type="radio" name="time" id="time1" value="9:00 AM" required>
@@ -351,6 +377,48 @@
 
                             <!-- Submit Button -->
                             <div class="form-submit" id="form-submit">
+                                <!-- Payment Selection -->
+                                <div class="payment-section mb-3" id="payment-section">
+                                    <h5 class="mb-2"><i class="fas fa-wallet me-2 text-primary"></i>Payment Method</h5>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="payment-telebirr" value="telebirr" checked>
+                                        <label class="form-check-label" for="payment-telebirr">Telebirr (Mobile Money)</label>
+                                    </div>
+                                    <div class="ps-4 mt-2 payment-details" id="telebirr-details">
+                                        <label class="form-label small">Telebirr Phone Number</label>
+                                        <input type="tel" class="form-control" id="telebirr-phone" >
+                                        <div class="invalid-feedback d-none" id="telebirr-error"></div>
+                                    </div>
+
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="payment-cbe" value="cbe">
+                                        <label class="form-check-label" for="payment-cbe">CBE Birr</label>
+                                    </div>
+                                    <div class="ps-4 mt-2 payment-details" id="cbe-details" style="display:none;">
+                                        <label class="form-label small">Phone Number</label>
+                                        <input type="text" class="form-control" id="cbe-ref">
+                                        <div class="invalid-feedback d-none" id="cbe-error"></div>
+                                    </div>
+
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="payment-bank" value="bank">
+                                        <label class="form-check-label" for="payment-bank">Bank Transfer (e.g., CBE, Awash)</label>
+                                    </div>
+                                    <div class="ps-4 mt-2 payment-details" id="bank-details" style="display:none;">
+                                        <label class="form-label small">Select Bank</label>
+                                        <select class="form-select mb-2" id="bank-select">
+                                            <option value="cbe">Commercial Bank of Ethiopia (CBE)</option>
+                                            <option value="awash">Awash Bank</option>
+                                            <option value="dashen">Dashen Bank</option>
+                                            <option value="abyssinia">Abyssinia Bank</option>
+                                        </select>
+                                        <label class="form-label small">Account Number / Reference</label>
+                                        <input type="text" class="form-control" id="bank-ref" placeholder="Account number or transaction reference">
+                                        <div class="invalid-feedback d-none" id="bank-error"></div>
+                                        <div class="small text-muted mt-2 payment-small-note">After payment, enter the transaction reference above. We'll confirm manually.</div>
+                                    </div>
+                                </div>
+
                                 <button type="submit" class="btn btn-primary btn-lg w-100" id="confirm-booking-btn">
                                     <i class="fas fa-calendar-check me-2"></i>Confirm Booking
                                 </button>
@@ -477,11 +545,11 @@
                     <ul class="list-unstyled">
                         <li class="mb-2" id="contact-phone">
                             <i class="fas fa-phone me-2 text-primary"></i>
-                            <span id="phone-number">0912345678</span>
+                            <span id="phone-number">(+251) 921456765</span>
                         </li>
                         <li class="mb-2" id="contact-email">
                             <i class="fas fa-envelope me-2 text-primary"></i>
-                            <span id="email-address">info@quickcut.com</span>
+                            <span id="email-address">quickcut@gmail.com</span>
                         </li>
                         <li id="contact-address">
                             <i class="fas fa-map-marker-alt me-2 text-primary"></i>
@@ -493,9 +561,8 @@
                 <div class="col-lg-4" id="footer-right">
                     <h5 class="fw-bold mb-3">Working Hours</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2">Monday - Friday: 9:00 AM - 8:00 PM</li>
-                        <li class="mb-2">Saturday: 9:00 AM - 6:00 PM</li>
-                        <li>Sunday: 10:00 AM - 4:00 PM</li>
+                        <li class="mb-2">Monday - Sunday: 6:00 AM - 6:00 PM</li>
+                       
                     </ul>
                 </div>
             </div>
@@ -519,7 +586,9 @@
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Auth (logout handling) -->
+    <script src="js/auth.js"></script>
     <!-- Custom JavaScript -->
-    <script src="main.js"></script>
+    <script src="js/bookappointment.js"></script>
 </body>
 </html>

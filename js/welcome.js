@@ -306,8 +306,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         };
         
+        // Initialize queue display
+        updateQueueDisplay();
+        
         // Simulate queue updates
-        setInterval(() => {
+        const queueInterval = setInterval(() => {
             // Randomly update queue position
             if (Math.random() > 0.7 && waitingPeople > 0) {
                 waitingPeople--;
@@ -322,26 +325,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 updateQueueDisplay();
                 
-                // Show notification when position changes
-                if (waitingPeople <= 2) {
-                    showToast('Queue Update', `Only ${waitingPeople} people ahead of you! Get ready.`, 'info');
+                // Send silent notification instead of alert
+                if (hasNotificationSupport && Notification.permission === 'granted') {
+                    sendSilentNotification('Queue Update', `Only ${waitingPeople} people ahead of you!`);
                 }
             }
-        }, 10000); // Update every 10 seconds
+        }, 15000); // Update every 15 seconds (less frequent)
         
         // Refresh queue button
         const refreshBtn = document.getElementById('refresh-queue');
         if (refreshBtn) {
             refreshBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                const originalHTML = this.innerHTML;
                 this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+                this.disabled = true;
                 
                 setTimeout(() => {
-                    this.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Refresh Queue Status';
+                    this.innerHTML = originalHTML;
+                    this.disabled = false;
                     showToast('Queue Updated', 'Queue status has been refreshed', 'success');
                 }, 1000);
             });
         }
+        
+        // Clear interval when page changes
+        window.addEventListener('beforeunload', () => {
+            clearInterval(queueInterval);
+        });
     }
 
     // ========== PASSWORD VISIBILITY TOGGLE ==========
@@ -479,6 +490,10 @@ document.addEventListener('DOMContentLoaded', function() {
             border: 2px solid ${primaryColor} !important;
             box-shadow: 0 10px 25px rgba(255, 107, 53, 0.2) !important;
         }
+        
+        .shake {
+            animation: shake 0.5s ease;
+        }
     `;
     document.head.appendChild(styleSheet);
 
@@ -512,7 +527,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Remove existing toasts
         const existingToast = document.querySelector('.custom-toast');
         if (existingToast) {
-            existingToast.remove();
+            existingToast.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => {
+                if (existingToast.parentNode) {
+                    existingToast.remove();
+                }
+            }, 300);
         }
         
         // Create toast container if it doesn't exist
@@ -541,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         toastContainer.appendChild(toast);
         
-        // Auto remove after 5 seconds
+        // Auto remove after 4 seconds
         setTimeout(() => {
             if (toast.parentNode) {
                 toast.style.animation = 'slideOutRight 0.3s ease';
@@ -551,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }, 300);
             }
-        }, 5000);
+        }, 4000);
         
         // Close button functionality
         const closeBtn = toast.querySelector('.btn-close');
@@ -565,268 +585,212 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // ========== NOTIFICATION SYSTEM ==========
+    const notificationBtn = document.getElementById('enable-notifications-btn');
+    
+    // Check if browser supports notifications
+    const hasNotificationSupport = 'Notification' in window;
+    
+    // Function to send silent notifications
+    function sendSilentNotification(title, message) {
+        if (!hasNotificationSupport || Notification.permission !== 'granted') {
+            return;
+        }
+        
+        const notification = new Notification(`QuickCut - ${title}`, {
+            body: message,
+            icon: 'https://cdn-icons-png.flaticon.com/512/1995/1995515.png',
+            silent: true, // No sound
+            requireInteraction: false // Don't require user interaction
+        });
+        
+        // Auto close after 5 seconds
+        setTimeout(() => {
+            notification.close();
+        }, 5000);
+        
+        return notification;
+    }
+    
+    if (notificationBtn) {
+        // Update button text based on permission state
+        const updateNotificationButton = () => {
+            if (!hasNotificationSupport) {
+                notificationBtn.innerHTML = '<i class="fas fa-bell-slash me-2"></i>Notifications Unavailable';
+                notificationBtn.classList.add('btn-secondary', 'disabled');
+                notificationBtn.style.cursor = 'not-allowed';
+                return;
+            }
+            
+            switch(Notification.permission) {
+                case 'granted':
+                    notificationBtn.innerHTML = '<i class="fas fa-bell me-2"></i>Notifications Enabled';
+                    notificationBtn.classList.remove('btn-outline-primary', 'btn-secondary');
+                    notificationBtn.classList.add('btn-success');
+                    notificationBtn.style.cursor = 'default';
+                    break;
+                case 'denied':
+                    notificationBtn.innerHTML = '<i class="fas fa-bell-slash me-2"></i>Notifications Blocked';
+                    notificationBtn.classList.remove('btn-outline-primary', 'btn-success');
+                    notificationBtn.classList.add('btn-secondary', 'disabled');
+                    notificationBtn.style.cursor = 'not-allowed';
+                    break;
+                default: // 'default' or not requested yet
+                    notificationBtn.innerHTML = '<i class="fas fa-bell me-2"></i>Enable Notifications';
+                    notificationBtn.classList.remove('btn-success', 'btn-secondary', 'disabled');
+                    notificationBtn.classList.add('btn-outline-primary');
+                    notificationBtn.style.cursor = 'pointer';
+            }
+        };
+    
+        // Initialize button state
+        updateNotificationButton();
+    
+        // Handle notification request
+        notificationBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            // Don't do anything if already granted or unsupported
+            if (Notification.permission === 'granted' || !hasNotificationSupport) {
+                return;
+            }
+            
+            if (Notification.permission === 'denied') {
+                showToast('Notifications Blocked', 'Please enable notifications in your browser settings', 'info');
+                return;
+            }
+            
+            // Request permission without alerts
+            const permission = await Notification.requestPermission();
+            
+            // Update button based on result
+            updateNotificationButton();
+            
+            if (permission === 'granted') {
+                // Send silent welcome notification
+                sendSilentNotification('Welcome!', 'You will receive queue updates quietly.');
+                showToast('Notifications Enabled', 'You will receive silent queue updates', 'success');
+            }
+        });
+        
+        // Add settings icon for notification preferences
+        if (hasNotificationSupport && Notification.permission === 'granted') {
+            const addNotificationSettingsLink = () => {
+                if (!notificationBtn.nextElementSibling || !notificationBtn.nextElementSibling.classList.contains('notification-settings-link')) {
+                    const settingsLink = document.createElement('a');
+                    settingsLink.href = '#';
+                    settingsLink.className = 'notification-settings-link ms-2';
+                    settingsLink.innerHTML = '<i class="fas fa-cog"></i>';
+                    settingsLink.title = 'Notification settings';
+                    settingsLink.style.fontSize = '0.9rem';
+                    settingsLink.style.opacity = '0.7';
+                    settingsLink.style.textDecoration = 'none';
+                    
+                    settingsLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        showNotificationSettings();
+                    });
+                    
+                    notificationBtn.parentNode.insertBefore(settingsLink, notificationBtn.nextSibling);
+                }
+            };
+            
+            addNotificationSettingsLink();
+        }
+    }
+    
+    // Function to show notification settings modal
+    function showNotificationSettings() {
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('notification-settings-modal');
+        
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'notification-settings-modal';
+            modal.className = 'modal fade';
+            modal.innerHTML = `
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Notification Preferences</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="notification-status mb-4">
+                                <h6>Current Status:</h6>
+                                <div class="alert ${Notification.permission === 'granted' ? 'alert-success' : 'alert-warning'}">
+                                    <i class="fas fa-${Notification.permission === 'granted' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                                    ${hasNotificationSupport ? 
+                                        `Notifications are ${Notification.permission === 'granted' ? 'enabled' : Notification.permission === 'denied' ? 'disabled' : 'not enabled yet'}` :
+                                        'Browser does not support notifications'
+                                    }
+                                </div>
+                            </div>
+                            
+                            <div class="notification-types">
+                                <h6 class="mb-3">Receive updates for:</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="queue-updates" checked>
+                                    <label class="form-check-label" for="queue-updates">
+                                        Queue position updates
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="reminders" checked>
+                                    <label class="form-check-label" for="reminders">
+                                        Appointment reminders
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="promotions">
+                                    <label class="form-check-label" for="promotions">
+                                        Special offers
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="notification-note mt-4">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Notifications will appear silently without interrupting your work.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="save-notification-settings">Save Preferences</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Add save functionality
+            modal.querySelector('#save-notification-settings').addEventListener('click', function() {
+                showToast('Preferences Saved', 'Your notification settings have been updated', 'success');
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                bsModal.hide();
+            });
+        }
+        
+        // Initialize Bootstrap modal
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+    }
+
     // ========== INITIALIZATION COMPLETE ==========
     console.log('QuickCut JavaScript initialized successfully!');
     
-    // Show welcome message on home page
-    if (window.location.pathname.includes('welcome.html') || window.location.pathname === '/') {
-        setTimeout(() => {
-            showToast('Welcome to QuickCut!', 'Skip the wait. Get the perfect cut.', 'success');
-        }, 1000);
+    // On home page: if user has an active booking, go to queue status.
+    // Remove the welcome toast — we prefer showing queue status when a booking exists.
+    if (window.location.pathname.includes('welcome.html') || window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
+        try {
+            const currentBooking = sessionStorage.getItem('currentBooking');
+            if (currentBooking) {
+                window.location.href = 'queuestatus.html';
+            }
+        } catch (err) {
+            console.warn('Failed checking current booking', err);
+        }
     }
 });
-// ========== NOTIFICATION SYSTEM ==========
-const notificationBtn = document.getElementById('enable-notifications-btn');
-const toastContainer = document.createElement('div');
-toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
-document.body.appendChild(toastContainer);
-
-// Check if browser supports notifications
-const hasNotificationSupport = 'Notification' in window;
-
-if (notificationBtn) {
-    // Update button text based on permission state
-    const updateNotificationButton = () => {
-        if (!hasNotificationSupport) {
-            notificationBtn.innerHTML = '<i class="fas fa-bell-slash me-2"></i>Notifications Unsupported';
-            notificationBtn.classList.add('disabled');
-            return;
-        }
-        
-        switch(Notification.permission) {
-            case 'granted':
-                notificationBtn.innerHTML = '<i class="fas fa-bell me-2"></i>Notifications Enabled ✓';
-                notificationBtn.classList.remove('btn-outline-primary');
-                notificationBtn.classList.add('btn-success');
-                notificationBtn.href = '#';
-                break;
-            case 'denied':
-                notificationBtn.innerHTML = '<i class="fas fa-bell-slash me-2"></i>Notifications Blocked';
-                notificationBtn.classList.remove('btn-outline-primary');
-                notificationBtn.classList.add('btn-secondary', 'disabled');
-                notificationBtn.href = '#';
-                break;
-            default: // 'default' or not requested yet
-                notificationBtn.innerHTML = '<i class="fas fa-bell me-2"></i>Enable Notifications';
-                notificationBtn.classList.add('btn-outline-primary');
-                notificationBtn.classList.remove('btn-success', 'btn-secondary', 'disabled');
-                notificationBtn.href = '#';
-        }
-    };
-
-    // Initialize button state
-    updateNotificationButton();
-
-    // Handle notification request
-    notificationBtn.addEventListener('click', async function(e) {
-        e.preventDefault();
-        
-        if (!hasNotificationSupport) {
-            showToast('Unsupported', 'Your browser does not support notifications', 'error');
-            return;
-        }
-        
-        if (Notification.permission === 'granted') {
-            showToast('Already Enabled', 'Notifications are already enabled!', 'info');
-            
-            // Test notification
-            if (queueCard) {
-                const testNotification = new Notification('QuickCut - Test Notification', {
-                    body: 'Your queue status will be updated shortly.',
-                    icon: 'https://cdn-icons-png.flaticon.com/512/1995/1995515.png'
-                });
-                
-                // Close notification after 5 seconds
-                setTimeout(() => {
-                    testNotification.close();
-                }, 5000);
-            }
-            return;
-        }
-        
-        if (Notification.permission === 'denied') {
-            showToast('Blocked', 'Notifications are blocked. Please enable them in browser settings.', 'error');
-            return;
-        }
-        
-        // Request permission
-        const permission = await Notification.requestPermission();
-        
-        if (permission === 'granted') {
-            showToast('Success!', 'Notifications enabled successfully', 'success');
-            updateNotificationButton();
-            
-            // Send welcome notification
-            if (queueCard) {
-                const welcomeNotification = new Notification('QuickCut - Welcome!', {
-                    body: 'You will now receive queue updates and notifications.',
-                    icon: 'https://cdn-icons-png.flaticon.com/512/1995/1995515.png'
-                });
-                
-                setTimeout(() => {
-                    welcomeNotification.close();
-                }, 5000);
-            }
-        } else {
-            showToast('Permission Denied', 'You can enable notifications later in browser settings', 'warning');
-            updateNotificationButton();
-        }
-    });
-}
-
-// Function to send queue notifications
-function sendQueueNotification(title, message, position = null) {
-    if (!hasNotificationSupport || Notification.permission !== 'granted') {
-        return;
-    }
-    
-    const notification = new Notification(`QuickCut - ${title}`, {
-        body: position ? `${message} You're now #${position} in line.` : message,
-        icon: 'https://cdn-icons-png.flaticon.com/512/1995/1995515.png',
-        tag: 'queue-update'
-    });
-    
-    // Close notification after 10 seconds
-    setTimeout(() => {
-        notification.close();
-    }, 10000);
-    
-    return notification;
-}
-
-// Integrate with queue simulation
-if (queueCard) {
-    let previousWaitingCount = waitingPeople;
-    
-    // Modify the queue simulation to include notifications
-    setInterval(() => {
-        // Existing queue update logic...
-        if (Math.random() > 0.7 && waitingPeople > 0) {
-            waitingPeople--;
-            
-            // Check if user's position improved
-            if (waitingPeople < previousWaitingCount) {
-                // Send notification for position improvement
-                if (hasNotificationSupport && Notification.permission === 'granted') {
-                    sendQueueNotification('Queue Update', 'Your position has improved!', waitingPeople + 1);
-                }
-            }
-            
-            previousWaitingCount = waitingPeople;
-            
-            // Update next slot time randomly
-            if (Math.random() > 0.5) {
-                const hours = Math.floor(Math.random() * 3) + 1;
-                const minutes = Math.floor(Math.random() * 60);
-                const period = Math.random() > 0.5 ? 'PM' : 'AM';
-                nextSlot = `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
-            }
-            
-            updateQueueDisplay();
-            
-            // Show toast notification
-            if (waitingPeople <= 2) {
-                showToast('Queue Update', `Only ${waitingPeople} people ahead of you! Get ready.`, 'info');
-                
-                // Also send browser notification
-                if (waitingPeople === 2 && hasNotificationSupport && Notification.permission === 'granted') {
-                    sendQueueNotification('Almost Your Turn!', 'Only 2 people ahead of you. Please prepare to arrive soon.', 3);
-                }
-                
-                if (waitingPeople === 1 && hasNotificationSupport && Notification.permission === 'granted') {
-                    sendQueueNotification('You\'re Next!', 'Only 1 person ahead of you. Please arrive at the salon.', 2);
-                }
-                
-                if (waitingPeople === 0 && hasNotificationSupport && Notification.permission === 'granted') {
-                    sendQueueNotification('It\'s Your Turn!', 'Please proceed to the barber station.', 1);
-                }
-            }
-        }
-    }, 10000);
-}
-
-// Function to show notification settings modal
-function showNotificationSettings() {
-    // Create modal if it doesn't exist
-    let modal = document.getElementById('notification-settings-modal');
-    
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'notification-settings-modal';
-        modal.className = 'modal fade';
-        modal.innerHTML = `
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Notification Settings</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="notification-status mb-4">
-                            <h6>Current Status:</h6>
-                            <div class="alert ${Notification.permission === 'granted' ? 'alert-success' : 'alert-warning'}">
-                                <i class="fas fa-${Notification.permission === 'granted' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
-                                ${hasNotificationSupport ? 
-                                    `Notifications are ${Notification.permission === 'granted' ? 'enabled' : Notification.permission === 'denied' ? 'blocked' : 'not enabled'}` :
-                                    'Browser does not support notifications'
-                                }
-                            </div>
-                        </div>
-                        
-                        <div class="notification-types">
-                            <h6 class="mb-3">Notification Types:</h6>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="queue-updates" checked>
-                                <label class="form-check-label" for="queue-updates">
-                                    Queue position updates
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="reminders" checked>
-                                <label class="form-check-label" for="reminders">
-                                    Appointment reminders
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="promotions" checked>
-                                <label class="form-check-label" for="promotions">
-                                    Special offers and promotions
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="save-notification-settings">Save Settings</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
-    
-    // Initialize Bootstrap modal
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-}
-
-// Add notification settings to notification button context
-if (notificationBtn && hasNotificationSupport && Notification.permission === 'granted') {
-    // Add settings option via right-click/long-press
-    notificationBtn.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        showNotificationSettings();
-    });
-    
-    // Add long press for mobile
-    let pressTimer;
-    notificationBtn.addEventListener('touchstart', function(e) {
-        pressTimer = setTimeout(() => {
-            showNotificationSettings();
-        }, 1000);
-    });
-    
-    notificationBtn.addEventListener('touchend', function() {
-        clearTimeout(pressTimer);
-    });
-}
