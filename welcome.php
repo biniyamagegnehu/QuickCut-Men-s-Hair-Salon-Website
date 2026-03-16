@@ -26,22 +26,22 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto" id="nav-menu">
                     <li class="nav-item">
-                        <a class="nav-link active" href="welcome.html"><i class="fas fa-home me-1"></i>Home</a>
+                        <a class="nav-link active" href="welcome.php"><i class="fas fa-home me-1"></i>Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.html"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
+                        <a class="nav-link" href="login.php"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.html"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
+                        <a class="nav-link" href="login.php"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="aboutus.html"><i class="fas fa-info-circle me-1"></i>About</a>
+                        <a class="nav-link" href="aboutus.php"><i class="fas fa-info-circle me-1"></i>About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.html"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                        <a class="nav-link" href="login.php"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
                     </li>
                 </ul>
-                <a href="login.html" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="book-now-btn">
+                <a href="login.php" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="book-now-btn">
                     <i class="fas fa-scissors me-1"></i>Book Now
                 </a>
             </div>
@@ -60,10 +60,10 @@
                         <h2 class="display-4 fw-light mb-4" id="hero-tagline">Skip the wait. <span class="fw-bold">Get the cut.</span></h2>
                         <p class="lead mb-5" id="hero-description">Professional grooming services tailored for the modern man. Book online and avoid long queues with our real-time scheduling system.</p>
                         <div class="d-flex flex-wrap gap-3 hero-buttons">
-                            <a href="login.html" class="btn btn-primary btn-lg px-5 py-3" id="book-appointment-btn">
+                            <a href="login.php" class="btn btn-primary btn-lg px-5 py-3" id="book-appointment-btn">
                                 <i class="fas fa-calendar-check me-2"></i>Book Appointment Now
                             </a>
-                            <a href="login.html" class="btn btn-outline-light btn-lg px-5 py-3" id="view-queue-btn">
+                            <a href="login.php" class="btn btn-outline-light btn-lg px-5 py-3" id="view-queue-btn">
                                 <i class="fas fa-clock me-2"></i>View Live Queue
                             </a>
                         </div>
