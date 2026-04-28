@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (isset($_SESSION['user_id'])) {
+    header("Location: ../welcome.php");
+    exit;
+}
+$is_logged_in = false; // Always false if they reach here due to redirect above
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +18,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/register.css">
+    <script>
+        const BASE_URL = '<?php require_once "../includes/config.php"; echo BASE_URL; ?>';
+    </script>
 </head>
 <body id="create-body">
     <!-- Navigation -->
@@ -27,19 +38,25 @@
                         <a class="nav-link" href="../welcome.php" id="nav-home"><i class="fas fa-home me-1"></i>Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="register.php" id="nav-book-appointment"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
+                        <a class="nav-link" href="<?php echo isset($_SESSION['user_id']) ? '../booking/bookappointment.php' : 'login.php'; ?>" id="nav-book-appointment"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="register.php" id="nav-queue-status"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
+                        <a class="nav-link" href="<?php echo isset($_SESSION['user_id']) ? '../queue/queuestatus.php' : 'login.php'; ?>" id="nav-queue-status"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../aboutus.php" id="nav-about"><i class="fas fa-info-circle me-1"></i>About</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="register.php" id="nav-create-account"><i class="fas fa-user-plus me-1"></i>Create Account</a>
-                    </li>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php" id="nav-logout"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.php" id="nav-login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
-                <a href="register.php" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="create-book-now">
+                <a href="<?php echo isset($_SESSION['user_id']) ? '../booking/bookappointment.php' : 'login.php'; ?>" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="create-book-now">
                     <i class="fas fa-scissors me-1"></i>Book Now
                 </a>
             </div>
@@ -58,7 +75,7 @@
                             <p class="text-muted" id="create-subtitle">Create your account in just a few steps</p>
                         </div>
                         
-                        <form action="../booking/bookappointment.php" method="get" id="create-form">
+                        <form action="#" method="get" id="create-form">
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label for="firstName" class="form-label fw-semibold">First Name</label>
