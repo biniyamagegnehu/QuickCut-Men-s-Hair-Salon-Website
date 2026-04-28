@@ -127,7 +127,7 @@
             all from one powerful admin panel.
         </p>
         
-        <a href="login.html" class="btn-admin">
+        <a href="login.php" class="btn-admin">
             <i class="fas fa-sign-in-alt"></i>
             Go to Admin Panel
         </a>

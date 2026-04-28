@@ -9,19 +9,19 @@ let barbers = JSON.parse(localStorage.getItem('quickcut-barbers')) || [];
 let services = JSON.parse(localStorage.getItem('quickcut-services')) || [];
 let customers = JSON.parse(localStorage.getItem('quickcut-customers')) || [];
 let notifications = JSON.parse(localStorage.getItem('quickcut-notifications')) || [];
-let currentPage = window.location.pathname.split('/').pop().replace('.html', '');
+let currentPage = window.location.pathname.split('/').pop().replace('.php', '');
 
 // Initialize common features
 function initCommonFeatures() {
     // Skip authentication check for login page
-    if (window.location.pathname.includes('login.html')) {
+    if (window.location.pathname.includes('login.php')) {
         return;
     }
     
     // Check if user is logged in
     const isLoggedIn = localStorage.getItem('quickcut-admin-loggedin') === 'true';
     if (!isLoggedIn) {
-        window.location.href = 'login.html';
+        window.location.href = 'login.php';
         return;
     }
     
@@ -382,7 +382,7 @@ function markActiveNavLink() {
         
         // Special case for dashboard
         if (currentPage === '' || currentPage === 'admin' || currentPage === 'admin/') {
-            if (href === 'dashboard.html') {
+            if (href === 'dashboard.php') {
                 link.classList.add('active');
             }
         }
@@ -751,16 +751,16 @@ function getResultDescription(result) {
 function viewSearchResult(type, id) {
     switch(type) {
         case 'appointment':
-            window.location.href = `appointments.html?view=${id}`;
+            window.location.href = `appointments.php?view=${id}`;
             break;
         case 'customer':
-            window.location.href = `customers.html?view=${id}`;
+            window.location.href = `customers.php?view=${id}`;
             break;
         case 'barber':
-            window.location.href = `barbers.html?view=${id}`;
+            window.location.href = `barbers.php?view=${id}`;
             break;
         case 'service':
-            window.location.href = `services.html?view=${id}`;
+            window.location.href = `services.php?view=${id}`;
             break;
     }
 }
@@ -1003,7 +1003,7 @@ function logout() {
     
     // Redirect to login page after delay
     setTimeout(() => {
-        window.location.href = 'login.html';
+        window.location.href = 'login.php';
     }, 1500);
 }
 

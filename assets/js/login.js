@@ -180,45 +180,64 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Logging in...';
         submitBtn.disabled = true;
         
-        // Check if user exists in localStorage
-        const users = JSON.parse(localStorage.getItem('quickcutUsers') || '[]');
-        const userExists = users.some(user => user.email === email);
-        
-        // Simulate API call delay
-        setTimeout(() => {
-            if (userExists) {
+        const passwordInput = document.getElementById('login-password');
+        const loginMessage = document.getElementById('login-message');
+
+        // Call backend API
+        fetch('login.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                password: passwordInput.value
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
                 // Successful login
-                const loginMessage = document.getElementById('login-message');
-                loginMessage.innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
-                    '<i class="fas fa-check-circle me-2"></i>Login successful! Redirecting...' +
-                    '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
-                    '</div>';
+                loginMessage.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>${data.message} Redirecting...
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
                 
-                // Save current user session
-                const currentUser = users.find(user => user.email === email);
-                sessionStorage.setItem('quickcutCurrentUser', JSON.stringify(currentUser));
+                // Save current user session (optional, for client-side display)
+                sessionStorage.setItem('quickcutCurrentUser', JSON.stringify({
+                    email: email,
+                    name: data.name,
+                    role: data.role
+                }));
                 sessionStorage.setItem('lastLogin', new Date().toISOString());
-                
-                // Setup auto-logout
-                setupAutoLogout();
                 
                 // Redirect after delay
                 setTimeout(() => {
-                    window.location.href = 'bookappointment.html';
+                    window.location.href = data.redirect;
                 }, 1500);
             } else {
-                // User doesn't exist - show create account suggestion
-                const loginMessage = document.getElementById('login-message');
-                loginMessage.innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert">' +
-                    '<i class="fas fa-exclamation-circle me-2"></i>Account not found. Please create an account.' +
-                    '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
-                    '</div>';
+                // Login failed
+                loginMessage.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>${data.message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
                 
                 // Reset button
                 submitBtn.innerHTML = originalHTML;
                 submitBtn.disabled = false;
             }
-        }, 1500);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            loginMessage.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>Something went wrong. Please try again.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+            
+            // Reset button
+            submitBtn.innerHTML = originalHTML;
+            submitBtn.disabled = false;
+        });
     }
     
     // ========== LOGOUT FUNCTIONALITY ==========
@@ -231,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.clear();
         
         // Immediately redirect to home page
-        window.location.href = 'index.html';
+        window.location.href = 'welcome.php';
     }
     
     // ========== CHECK LOGIN STATUS ==========
@@ -240,21 +259,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentPage = window.location.pathname.split('/').pop();
         
         // If user is on login page but already logged in, redirect to appointment page
-        if (currentUser && currentPage === 'login.html') {
+        if (currentUser && currentPage === 'login.php') {
             setTimeout(() => {
-                window.location.href = 'bookappointment.html';
+                window.location.href = '../booking/bookappointment.php';
             }, 100);
             return;
         }
         
         // If user is not logged in but trying to access protected pages
-        const protectedPages = ['bookappointment.html', 'profile.html', 'dashboard.html', 'appointments.html'];
+        const protectedPages = ['bookappointment.php', 'profile.php', 'dashboard.php', 'appointments.php'];
         
         if (!currentUser && protectedPages.includes(currentPage)) {
             // Redirect to login page
             showToast('Access Denied', 'Please login to continue', 'error');
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'login.php';
             }, 1500);
             return;
         }
@@ -293,10 +312,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Update login link to dashboard if it exists
-            const loginLink = document.querySelector('a[href="login.html"]');
+            const loginLink = document.querySelector('a[href="login.php"]');
             if (loginLink && currentPage !== 'login.html') {
                 loginLink.innerHTML = '<i class="fas fa-user me-1"></i> Dashboard';
-                loginLink.href = 'bookappointment.html';
+                loginLink.href = '../booking/bookappointment.php';
             }
         }
     }
@@ -377,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.removeItem('quickcutCurrentUser');
         
         // Immediately redirect to home page
-        window.location.replace('index.html');
+        window.location.replace('welcome.php');
     }
     
     // ========== FORGOT PASSWORD MODAL ==========
@@ -729,7 +748,7 @@ function logoutUserImmediately() {
     sessionStorage.clear();
     
     // Immediately redirect to home page
-    window.location.href = 'index.html';
+    window.location.href = 'welcome.php';
 }
 
 /**

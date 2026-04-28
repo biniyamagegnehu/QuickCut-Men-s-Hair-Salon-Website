@@ -9,13 +9,13 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/aboutus.css">
+    <link rel="stylesheet" href="assets/css/aboutus.css">
 </head>
 <body id="about-body">
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="about-nav">
         <div class="container">
-            <a class="navbar-brand logo" href="welcome.html" id="about-logo">
+            <a class="navbar-brand logo" href="welcome.php" id="about-logo">
                 <i class="fas fa-cut me-2"></i>QuickCut
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" id="about-menu-toggle">
@@ -24,22 +24,22 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto" id="about-nav-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="welcome.html" id="nav-home"><i class="fas fa-home me-1"></i>Home</a>
+                        <a class="nav-link" href="welcome.php" id="nav-home"><i class="fas fa-home me-1"></i>Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="bookappointment.html" id="nav-book"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
+                        <a class="nav-link" href="booking/bookappointment.php" id="nav-book"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="queuestatus.html" id="nav-queue"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
+                        <a class="nav-link" href="queue/queuestatus.php" id="nav-queue"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="aboutus.html" id="nav-about"><i class="fas fa-info-circle me-1"></i>About</a>
+                        <a class="nav-link active" href="aboutus.php" id="nav-about"><i class="fas fa-info-circle me-1"></i>About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.html" id="nav-login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                        <a class="nav-link" href="auth/login.php" id="nav-login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
                     </li>
                 </ul>
-                <a href="bookappointment.html" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="about-book-now">
+                <a href="booking/bookappointment.php" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="about-book-now">
                     <i class="fas fa-scissors me-1"></i>Book Now
                 </a>
             </div>
@@ -323,8 +323,8 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Auth (logout handling) -->
-    <script src="js/auth.js"></script>
+    <script src="assets/js/auth.js"></script>
     <!-- Custom JavaScript -->
-    <script src="js/aboutus.js"></script>
+    <script src="assets/js/aboutus.js"></script>
 </body>
 </html>

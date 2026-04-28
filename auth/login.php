@@ -1,3 +1,55 @@
+<?php
+session_start();
+
+// Redirect if already logged in
+if (isset($_SESSION['user_id'])) {
+    header("Location: ../welcome.php");
+    exit;
+}
+
+// Handle backend POST request for login
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    require_once '../includes/db.php';
+    header('Content-Type: application/json');
+    
+    $input = json_decode(file_get_contents('php://input'), true);
+    $email = isset($input['email']) ? trim($input['email']) : (isset($_POST['email']) ? trim($_POST['email']) : '');
+    $password = isset($input['password']) ? $input['password'] : (isset($_POST['password']) ? $_POST['password'] : '');
+    
+    if (empty($email) || empty($password)) {
+        echo json_encode(["success" => false, "message" => "Email and password are required."]);
+        exit;
+    }
+    
+    try {
+        $stmt = $pdo->prepare("SELECT id, name, password, role FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+        
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['name'] = $user['name'];
+            
+            // Redirect based on role
+            $redirect = ($user['role'] === 'admin') ? '../admin/dashboard.php' : '../welcome.php';
+            
+            echo json_encode([
+                "success" => true, 
+                "message" => "Login successful.", 
+                "redirect" => $redirect,
+                "role" => $user['role'],
+                "name" => $user['name']
+            ]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Invalid email or password."]);
+        }
+    } catch (PDOException $e) {
+        echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+    }
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,13 +61,17 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="../assets/css/login.css">
+    <link rel="stylesheet" href="../assets/css/notifications.css">
+    <script>
+        const BASE_URL = '<?php echo dirname(dirname($_SERVER['PHP_SELF'])) . "/"; ?>';
+    </script>
 </head>
 <body id="login-body">
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="login-nav">
         <div class="container">
-            <a class="navbar-brand logo" href="welcome.html" id="login-logo">
+            <a class="navbar-brand logo" href="../welcome.php" id="login-logo">
                 <i class="fas fa-cut me-2"></i>QuickCut
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" id="login-menu-toggle">
@@ -24,22 +80,54 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto" id="login-nav-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="welcome.html" id="nav-home"><i class="fas fa-home me-1"></i>Home</a>
+                        <a class="nav-link" href="../welcome.php" id="nav-home"><i class="fas fa-home me-1"></i>Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.html" id="nav-book-appointment"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
+                        <a class="nav-link" href="<?php echo isset($_SESSION['user_id']) ? '../booking/bookappointment.php' : 'login.php'; ?>" id="nav-book-appointment"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.html" id="nav-queue-status"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
+                        <a class="nav-link" href="<?php echo isset($_SESSION['user_id']) ? '../queue/queuestatus.php' : 'login.php'; ?>" id="nav-queue-status"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="aboutus.html" id="nav-about"><i class="fas fa-info-circle me-1"></i>About</a>
+                        <a class="nav-link" href="../aboutus.php" id="nav-about"><i class="fas fa-info-circle me-1"></i>About</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="login.html" id="nav-login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
-                    </li>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <!-- Notification Bell -->
+                        <li class="nav-item">
+                            <div class="notification-bell-wrapper nav-link" id="notification-bell-wrapper">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge" id="notification-badge">0</span>
+                                
+                                <div class="notification-dropdown" id="notification-dropdown">
+                                    <div class="notification-header">
+                                        <h6>Notifications</h6>
+                                        <a href="#" class="mark-all-read" id="mark-all-read-btn">Mark all as read</a>
+                                    </div>
+                                    <div class="unread-status p-2 px-3 small text-muted border-bottom">
+                                        <span id="unread-count-text">0 New</span>
+                                    </div>
+                                    <div class="notification-list" id="notification-list">
+                                        <div class="no-notifications">
+                                            <i class="fas fa-bell-slash"></i>
+                                            <p>Loading...</p>
+                                        </div>
+                                    </div>
+                                    <div class="notification-footer">
+                                        <a href="#">View All</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php" id="nav-logout"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="login.php" id="nav-login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
-                <a href="login.html" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="login-book-now">
+                <a href="<?php echo isset($_SESSION['user_id']) ? '../booking/bookappointment.php' : 'login.php'; ?>" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="login-book-now">
                     <i class="fas fa-scissors me-1"></i>Book Now
                 </a>
             </div>
@@ -58,7 +146,7 @@
                             <p class="text-muted" id="login-subtitle">Log in to manage your appointments</p>
                         </div>
                         
-                        <form action="bookappointment.html" method="get" id="login-form">
+                        <form action="#" method="get" id="login-form">
                             <div class="mb-3">
                                 <label for="email" class="form-label fw-semibold">Email Address</label>
                                 <div class="input-group">
@@ -98,7 +186,7 @@
                         
                         <div class="text-center mt-4 pt-3 border-top" id="create-account-section">
                             <p class="text-muted mb-3" id="new-user-text">New to QuickCut?</p>
-                            <a href="create.html" class="btn btn-outline-primary btn-lg w-100 create-account-btn" id="create-account-btn">
+                            <a href="register.php" class="btn btn-outline-primary btn-lg w-100 create-account-btn" id="create-account-btn">
                                 <i class="fas fa-user-plus me-2"></i>Create an Account
                             </a>
                         </div>
@@ -245,8 +333,8 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Auth (logout handling) -->
-    <script src="js/auth.js"></script>
+    <script src="../assets/js/auth.js"></script>
     <!-- Custom JavaScript -->
-    <script src="js/login.js"></script>
+    <script src="../assets/js/login.js"></script>
 </body>
 </html>

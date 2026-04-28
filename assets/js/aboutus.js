@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const linkPage = link.getAttribute('href');
             
             if (linkPage === currentPage || 
-                (currentPage === 'aboutus.html' && linkPage === 'aboutus.html')) {
+                (currentPage === 'aboutus.php' && linkPage === 'aboutus.php')) {
                 link.classList.add('active');
             }
         });
