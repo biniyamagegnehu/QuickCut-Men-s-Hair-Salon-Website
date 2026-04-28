@@ -420,54 +420,75 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.disabled = true;
         
         // Get form data
-        const userData = {
-            id: Date.now().toString(),
+        const formData = {
             firstName: firstNameInput.value.trim(),
             lastName: lastNameInput.value.trim(),
-            fullName: `${firstNameInput.value.trim()} ${lastNameInput.value.trim()}`,
             email: emailInput.value.trim().toLowerCase(),
             phone: phoneInput.value.trim(),
-            password: passwordInput.value, // Note: Now stored as 6-digit number
-            marketingOptIn: document.getElementById('create-marketing-check').checked,
-            createdAt: new Date().toISOString(),
-            lastLogin: null,
-            bookings: []
+            password: passwordInput.value,
+            confirmPassword: confirmPasswordInput.value,
+            marketingOptIn: document.getElementById('create-marketing-check').checked
         };
         
-        // Simulate API call delay
-        setTimeout(() => {
-            // Save user to localStorage
-            const users = JSON.parse(localStorage.getItem('quickcutUsers') || '[]');
-            users.push(userData);
-            localStorage.setItem('quickcutUsers', JSON.stringify(users));
-            
-            // Save current user session
-            sessionStorage.setItem('quickcutCurrentUser', JSON.stringify(userData));
-            
-            // Show success message
+        // Call backend API
+        fetch('register_process.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                createMessage.innerHTML = `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        ${data.message} Redirecting to login...
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Scroll to success message
+                createMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Show welcome notification
+                showToast('Success!', 'Account created successfully.', 'success');
+                
+                // Redirect to login page after delay
+                setTimeout(() => {
+                    window.location.href = 'login.php';
+                }, 2000);
+            } else {
+                // Show error message
+                createMessage.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        ${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Reset button
+                submitBtn.innerHTML = originalHTML;
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
             createMessage.innerHTML = `
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    Account created successfully! Welcome to QuickCut. Redirecting...
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Something went wrong. Please try again later.
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             `;
             
-            // Scroll to success message
-            createMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Show welcome notification
-            showToast('Welcome to QuickCut!', 'Your account has been created successfully.', 'success');
-            
-            // Redirect to booking page after delay
-            setTimeout(() => {
-                window.location.href = '../booking/bookappointment.php';
-            }, 2000);
-            
-            // Reset button (just in case)
+            // Reset button
             submitBtn.innerHTML = originalHTML;
             submitBtn.disabled = false;
-        }, 1500);
+        });
     }
     
     // ========== BACK TO TOP BUTTON ==========

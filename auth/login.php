@@ -1,3 +1,55 @@
+<?php
+session_start();
+
+// Redirect if already logged in
+if (isset($_SESSION['user_id'])) {
+    header("Location: ../welcome.php");
+    exit;
+}
+
+// Handle backend POST request for login
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    require_once '../includes/db.php';
+    header('Content-Type: application/json');
+    
+    $input = json_decode(file_get_contents('php://input'), true);
+    $email = isset($input['email']) ? trim($input['email']) : (isset($_POST['email']) ? trim($_POST['email']) : '');
+    $password = isset($input['password']) ? $input['password'] : (isset($_POST['password']) ? $_POST['password'] : '');
+    
+    if (empty($email) || empty($password)) {
+        echo json_encode(["success" => false, "message" => "Email and password are required."]);
+        exit;
+    }
+    
+    try {
+        $stmt = $pdo->prepare("SELECT id, name, password, role FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+        
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['name'] = $user['name'];
+            
+            // Redirect based on role
+            $redirect = ($user['role'] === 'admin') ? '../admin/dashboard.php' : '../welcome.php';
+            
+            echo json_encode([
+                "success" => true, 
+                "message" => "Login successful.", 
+                "redirect" => $redirect,
+                "role" => $user['role'],
+                "name" => $user['name']
+            ]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Invalid email or password."]);
+        }
+    } catch (PDOException $e) {
+        echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+    }
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +62,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/login.css">
+    <link rel="stylesheet" href="../assets/css/notifications.css">
+    <script>
+        const BASE_URL = '<?php echo dirname(dirname($_SERVER['PHP_SELF'])) . "/"; ?>';
+    </script>
 </head>
 <body id="login-body">
     <!-- Navigation -->
@@ -27,19 +83,51 @@
                         <a class="nav-link" href="../welcome.php" id="nav-home"><i class="fas fa-home me-1"></i>Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../booking/bookappointment.php" id="nav-book-appointment"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
+                        <a class="nav-link" href="<?php echo isset($_SESSION['user_id']) ? '../booking/bookappointment.php' : 'login.php'; ?>" id="nav-book-appointment"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../queue/queuestatus.php" id="nav-queue-status"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
+                        <a class="nav-link" href="<?php echo isset($_SESSION['user_id']) ? '../queue/queuestatus.php' : 'login.php'; ?>" id="nav-queue-status"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../aboutus.php" id="nav-about"><i class="fas fa-info-circle me-1"></i>About</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="login.php" id="nav-login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
-                    </li>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <!-- Notification Bell -->
+                        <li class="nav-item">
+                            <div class="notification-bell-wrapper nav-link" id="notification-bell-wrapper">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge" id="notification-badge">0</span>
+                                
+                                <div class="notification-dropdown" id="notification-dropdown">
+                                    <div class="notification-header">
+                                        <h6>Notifications</h6>
+                                        <a href="#" class="mark-all-read" id="mark-all-read-btn">Mark all as read</a>
+                                    </div>
+                                    <div class="unread-status p-2 px-3 small text-muted border-bottom">
+                                        <span id="unread-count-text">0 New</span>
+                                    </div>
+                                    <div class="notification-list" id="notification-list">
+                                        <div class="no-notifications">
+                                            <i class="fas fa-bell-slash"></i>
+                                            <p>Loading...</p>
+                                        </div>
+                                    </div>
+                                    <div class="notification-footer">
+                                        <a href="#">View All</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php" id="nav-logout"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="login.php" id="nav-login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
-                <a href="login.php" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="login-book-now">
+                <a href="<?php echo isset($_SESSION['user_id']) ? '../booking/bookappointment.php' : 'login.php'; ?>" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="login-book-now">
                     <i class="fas fa-scissors me-1"></i>Book Now
                 </a>
             </div>
@@ -58,7 +146,7 @@
                             <p class="text-muted" id="login-subtitle">Log in to manage your appointments</p>
                         </div>
                         
-                        <form action="../booking/bookappointment.php" method="get" id="login-form">
+                        <form action="#" method="get" id="login-form">
                             <div class="mb-3">
                                 <label for="email" class="form-label fw-semibold">Email Address</label>
                                 <div class="input-group">
