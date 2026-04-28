@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Redirect after delay
                 setTimeout(() => {
-                    window.location.href = 'bookappointment.html';
+                    window.location.href = '../booking/bookappointment.php';
                 }, 1500);
             } else {
                 // User doesn't exist - show create account suggestion
@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.clear();
         
         // Immediately redirect to home page
-        window.location.href = 'index.html';
+        window.location.href = 'welcome.php';
     }
     
     // ========== CHECK LOGIN STATUS ==========
@@ -240,21 +240,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentPage = window.location.pathname.split('/').pop();
         
         // If user is on login page but already logged in, redirect to appointment page
-        if (currentUser && currentPage === 'login.html') {
+        if (currentUser && currentPage === 'login.php') {
             setTimeout(() => {
-                window.location.href = 'bookappointment.html';
+                window.location.href = '../booking/bookappointment.php';
             }, 100);
             return;
         }
         
         // If user is not logged in but trying to access protected pages
-        const protectedPages = ['bookappointment.html', 'profile.html', 'dashboard.html', 'appointments.html'];
+        const protectedPages = ['bookappointment.php', 'profile.php', 'dashboard.php', 'appointments.php'];
         
         if (!currentUser && protectedPages.includes(currentPage)) {
             // Redirect to login page
             showToast('Access Denied', 'Please login to continue', 'error');
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'login.php';
             }, 1500);
             return;
         }
@@ -293,10 +293,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Update login link to dashboard if it exists
-            const loginLink = document.querySelector('a[href="login.html"]');
+            const loginLink = document.querySelector('a[href="login.php"]');
             if (loginLink && currentPage !== 'login.html') {
                 loginLink.innerHTML = '<i class="fas fa-user me-1"></i> Dashboard';
-                loginLink.href = 'bookappointment.html';
+                loginLink.href = '../booking/bookappointment.php';
             }
         }
     }
@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.removeItem('quickcutCurrentUser');
         
         // Immediately redirect to home page
-        window.location.replace('index.html');
+        window.location.replace('welcome.php');
     }
     
     // ========== FORGOT PASSWORD MODAL ==========
@@ -729,7 +729,7 @@ function logoutUserImmediately() {
     sessionStorage.clear();
     
     // Immediately redirect to home page
-    window.location.href = 'index.html';
+    window.location.href = 'welcome.php';
 }
 
 /**

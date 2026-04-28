@@ -203,7 +203,7 @@ function updateCharts() {
 
 // Edit appointment
 function editAppointment(id) {
-    window.location.href = `appointments.html?edit=${id}`;
+    window.location.href = `appointments.php?edit=${id}`;
 }
 
 // Delete appointment

@@ -9,13 +9,13 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="../assets/css/login.css">
 </head>
 <body id="login-body">
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="login-nav">
         <div class="container">
-            <a class="navbar-brand logo" href="welcome.html" id="login-logo">
+            <a class="navbar-brand logo" href="../welcome.php" id="login-logo">
                 <i class="fas fa-cut me-2"></i>QuickCut
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" id="login-menu-toggle">
@@ -24,22 +24,22 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto" id="login-nav-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="welcome.html" id="nav-home"><i class="fas fa-home me-1"></i>Home</a>
+                        <a class="nav-link" href="../welcome.php" id="nav-home"><i class="fas fa-home me-1"></i>Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.html" id="nav-book-appointment"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
+                        <a class="nav-link" href="../booking/bookappointment.php" id="nav-book-appointment"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.html" id="nav-queue-status"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
+                        <a class="nav-link" href="../queue/queuestatus.php" id="nav-queue-status"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="aboutus.html" id="nav-about"><i class="fas fa-info-circle me-1"></i>About</a>
+                        <a class="nav-link" href="../aboutus.php" id="nav-about"><i class="fas fa-info-circle me-1"></i>About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="login.html" id="nav-login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                        <a class="nav-link active" href="login.php" id="nav-login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
                     </li>
                 </ul>
-                <a href="login.html" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="login-book-now">
+                <a href="login.php" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="login-book-now">
                     <i class="fas fa-scissors me-1"></i>Book Now
                 </a>
             </div>
@@ -58,7 +58,7 @@
                             <p class="text-muted" id="login-subtitle">Log in to manage your appointments</p>
                         </div>
                         
-                        <form action="bookappointment.html" method="get" id="login-form">
+                        <form action="../booking/bookappointment.php" method="get" id="login-form">
                             <div class="mb-3">
                                 <label for="email" class="form-label fw-semibold">Email Address</label>
                                 <div class="input-group">
@@ -98,7 +98,7 @@
                         
                         <div class="text-center mt-4 pt-3 border-top" id="create-account-section">
                             <p class="text-muted mb-3" id="new-user-text">New to QuickCut?</p>
-                            <a href="create.html" class="btn btn-outline-primary btn-lg w-100 create-account-btn" id="create-account-btn">
+                            <a href="register.php" class="btn btn-outline-primary btn-lg w-100 create-account-btn" id="create-account-btn">
                                 <i class="fas fa-user-plus me-2"></i>Create an Account
                             </a>
                         </div>
@@ -245,8 +245,8 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Auth (logout handling) -->
-    <script src="js/auth.js"></script>
+    <script src="../assets/js/auth.js"></script>
     <!-- Custom JavaScript -->
-    <script src="js/login.js"></script>
+    <script src="../assets/js/login.js"></script>
 </body>
 </html>

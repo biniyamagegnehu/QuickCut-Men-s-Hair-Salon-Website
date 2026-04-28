@@ -461,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Redirect to booking page after delay
             setTimeout(() => {
-                window.location.href = 'bookappointment.html';
+                window.location.href = '../booking/bookappointment.php';
             }, 2000);
             
             // Reset button (just in case)
@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.remove('active');
             
             if (link.getAttribute('href') === currentPage || 
-                (currentPage === 'create.html' && link.getAttribute('href') === 'create.html')) {
+                (currentPage === 'register.php' && link.getAttribute('href') === 'register.php')) {
                 link.classList.add('active');
             }
         });

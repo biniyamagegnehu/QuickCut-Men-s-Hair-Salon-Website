@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!href) return;
 
         // Only special-case links that navigate to the public home page
-        if (href.endsWith('welcome.html') || href === 'welcome.html') {
+        if (href.endsWith('welcome.php') || href === 'welcome.php') {
             // If this is the explicit logout link, clear session and allow navigation
             if (anchor.id === 'nav-logout') {
                 try {

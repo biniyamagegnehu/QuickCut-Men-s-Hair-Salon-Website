@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Permission default/undetermined: redirect to dedicated page to request permission
                 try {
-                    window.location.href = 'notificationenabled.html';
+                    window.location.href = '../notifications/notificationenabled.php';
                 } catch (err) {
                     // Fallback to in-place request if redirect fails
                     this.toggleNotifications();

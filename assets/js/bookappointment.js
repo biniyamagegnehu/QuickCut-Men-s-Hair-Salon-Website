@@ -899,7 +899,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const linkPage = link.getAttribute('href');
             
             if (linkPage === currentPage || 
-                (currentPage === 'bookappointment.html' && linkPage === 'bookappointment.html')) {
+                (currentPage === 'bookappointment.php' && linkPage === 'bookappointment.php')) {
                 link.classList.add('active');
             }
         });
@@ -1298,7 +1298,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } catch (e) {}
 
                     // Redirect to queue status immediately after saving booking
-                    window.location.href = 'queuestatus.html';
+                    window.location.href = '../queue/queuestatus.php';
 
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;

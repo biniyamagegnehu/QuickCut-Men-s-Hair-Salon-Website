@@ -783,11 +783,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // On home page: if user has an active booking, go to queue status.
     // Remove the welcome toast — we prefer showing queue status when a booking exists.
-    if (window.location.pathname.includes('welcome.html') || window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
+    if (window.location.pathname.includes('welcome.php') || window.location.pathname === '/' || window.location.pathname.includes('index.php')) {
         try {
             const currentBooking = sessionStorage.getItem('currentBooking');
             if (currentBooking) {
-                window.location.href = 'queuestatus.html';
+                window.location.href = 'queue/queuestatus.php';
             }
         } catch (err) {
             console.warn('Failed checking current booking', err);
