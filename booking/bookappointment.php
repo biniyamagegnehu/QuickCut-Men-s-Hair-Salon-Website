@@ -1,3 +1,35 @@
+<?php
+session_start();
+require_once '../includes/db.php';
+require_once '../includes/config.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../auth/login.php");
+    exit;
+}
+
+$is_logged_in = true;
+$user_name = '';
+$user_email = '';
+$user_phone = '';
+
+$stmt = $pdo->prepare("SELECT name, email, phone FROM users WHERE id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$user = $stmt->fetch();
+if ($user) {
+    $user_name = $user['name'] ?? '';
+    $user_email = $user['email'] ?? '';
+    $user_phone = $user['phone'] ?? '';
+}
+
+// Fetch services
+$stmt = $pdo->query("SELECT id, name, duration, price FROM services ORDER BY name ASC");
+$services = $stmt->fetchAll();
+
+// Fetch active barbers
+$stmt = $pdo->query("SELECT id, first_name, last_name, specialty, rating FROM barbers WHERE status = 'active' ORDER BY first_name ASC");
+$barbers = $stmt->fetchAll();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +42,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/bookappointment.css">
+    <link rel="stylesheet" href="../assets/css/notifications.css">
+    <script>
+        const BASE_URL = '<?php require_once "../includes/config.php"; echo BASE_URL; ?>';
+    </script>
     <!-- Payment styles -->
     <style>
         .payment-section {
@@ -78,9 +114,41 @@
                     <li class="nav-item">
                         <a class="nav-link" href="../aboutus.php" id="nav-about"><i class="fas fa-info-circle me-1"></i>About</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../welcome.php" id="nav-logout"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
-                    </li>
+                    <?php if ($is_logged_in): ?>
+                        <!-- Notification Bell -->
+                        <li class="nav-item">
+                            <div class="notification-bell-wrapper nav-link" id="notification-bell-wrapper">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge" id="notification-badge">0</span>
+                                
+                                <div class="notification-dropdown" id="notification-dropdown">
+                                    <div class="notification-header">
+                                        <h6>Notifications</h6>
+                                        <a href="#" class="mark-all-read" id="mark-all-read-btn">Mark all as read</a>
+                                    </div>
+                                    <div class="unread-status p-2 px-3 small text-muted border-bottom">
+                                        <span id="unread-count-text">0 New</span>
+                                    </div>
+                                    <div class="notification-list" id="notification-list">
+                                        <div class="no-notifications">
+                                            <i class="fas fa-bell-slash"></i>
+                                            <p>Loading...</p>
+                                        </div>
+                                    </div>
+                                    <div class="notification-footer">
+                                        <a href="#">View All</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../auth/logout.php" id="nav-logout"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../auth/login.php" id="nav-login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
                 <a href="bookappointment.php" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="booking-book-now">
                     <i class="fas fa-scissors me-1"></i>Book Appointment
@@ -105,11 +173,8 @@
                         </div>
                     </div>
                     <div class="col-lg-4 text-lg-end">
-                        <div class="header-stats" id="header-stats">
-                            <div class="stat-item">
-                                <div class="stat-number" id="available-slots">4</div>
-                                <div class="stat-label">Available Slots</div>
-                            </div>
+                        <div class="header-stats" id="header-stats" style="display: none;">
+                            <!-- Removed number of slots as requested -->
                         </div>
                     </div>
                 </div>
@@ -123,7 +188,7 @@
                 <div class="col-lg-8" id="booking-left-column">
                     <div class="booking-form-card" id="booking-form-card">
                         <!-- Progress -->
-                        <div class="booking-progress" id="ooking-progress">
+                        <div class="booking-progress" id="booking-progress">
                             <div class="progress-step active" id="progress-step-1">
                                 <span>1</span>
                                 <div class="step-label">Personal Info</div>
@@ -147,15 +212,18 @@
                         </div>
 
                         <!-- Personal Info -->
-                        <form action="../queue/queuestatus.php" method="get" id="booking-form">
-                            <div class="form-section" id="personal-info-section">
+                        <form action="queuestatus.html" method="get" id="booking-form">
+                            <?php 
+                            $hide_personal_info = $is_logged_in && !empty($user_name) && !empty($user_email) && !empty($user_phone);
+                            ?>
+                            <div class="form-section" id="personal-info-section" <?php echo $hide_personal_info ? 'style="display: none;"' : ''; ?>>
                                 <h3><i class="fas fa-user me-2 text-primary"></i>Personal Information</h3>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Full Name *</label>
                                         <div class="input-with-icon">
                                             <i class="fas fa-user"></i>
-                                            <input type="text" class="form-control" id="booking-full-name" placeholder="Enter your full name" required>
+                                            <input type="text" class="form-control" id="booking-full-name" placeholder="Enter your full name" required value="<?php echo htmlspecialchars($user_name); ?>">
                                         </div>
                                         <div class="invalid-feedback" id="name-error"></div>
                                     </div>
@@ -163,7 +231,7 @@
                                         <label class="form-label">Phone Number *</label>
                                         <div class="input-with-icon">
                                             <i class="fas fa-phone"></i>
-                                            <input type="tel" class="form-control" id="booking-phone" placeholder="0912345678" required>
+                                            <input type="tel" class="form-control" id="booking-phone" placeholder="0912345678" required value="<?php echo htmlspecialchars($user_phone); ?>">
                                         </div>
                                         <div class="invalid-feedback" id="phone-error"></div>
                                     </div>
@@ -171,201 +239,124 @@
                                         <label class="form-label">Email Address *</label>
                                         <div class="input-with-icon">
                                             <i class="fas fa-envelope"></i>
-                                            <input type="email" class="form-control" id="booking-email" placeholder="your@email.com" required>
+                                            <input type="email" class="form-control" id="booking-email" placeholder="your@email.com" required value="<?php echo htmlspecialchars($user_email); ?>">
                                         </div>
                                         <div class="invalid-feedback" id="email-error"></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Service Selection -->
                             <div class="form-section" id="service-selection-section">
                                 <h3><i class="fas fa-cut me-2 text-primary"></i>Select Service *</h3>
                                 <div class="service-options" id="service-options">
-                                    <div class="service-option" id="service-option-1">
-                                        <input type="radio" name="service" id="service1" value="haircut" required>
-                                        <label for="service1">
-                                            <div class="service-icon haircut-icon">
-                                                <i class="fas fa-cut"></i>
+                                    <?php foreach ($services as $index => $service): 
+                                        $icon_class = 'haircut-icon';
+                                        $icon_fa = 'fa-cut';
+                                        
+                                        $lower_name = strtolower($service['name']);
+                                        if (strpos($lower_name, 'beard') !== false) {
+                                            $icon_class = 'beard-icon';
+                                            $icon_fa = 'fa-user-tie';
+                                        } elseif (strpos($lower_name, 'premium') !== false || strpos($lower_name, 'package') !== false) {
+                                            $icon_class = 'premium-icon';
+                                            $icon_fa = 'fa-crown';
+                                        }
+                                    ?>
+                                    <div class="service-option" id="service-option-<?php echo $service['id']; ?>">
+                                        <input type="radio" name="service" id="service<?php echo $service['id']; ?>" value="<?php echo htmlspecialchars($service['name']); ?>" data-price="<?php echo $service['price']; ?> Birr" required>
+                                        <label for="service<?php echo $service['id']; ?>">
+                                            <div class="service-icon <?php echo $icon_class; ?>">
+                                                <i class="fas <?php echo $icon_fa; ?>"></i>
                                             </div>
                                             <div class="service-info">
-                                                <h4 id="service-1-title">Haircut</h4>
-                                                <p id="service-1-desc">Professional men's haircut with styling</p>
+                                                <h4 id="service-<?php echo $service['id']; ?>-title"><?php echo htmlspecialchars($service['name']); ?></h4>
+                                                <p id="service-<?php echo $service['id']; ?>-desc">Professional salon service</p>
                                                 <div class="service-price">
-                                                    <span class="price" id="service-1-price">250 Birr</span>
-                                                    <span class="duration" id="service-1-duration">30-45 min</span>
+                                                    <span class="price" id="service-<?php echo $service['id']; ?>-price"><?php echo $service['price']; ?> Birr</span>
+                                                    <span class="duration" id="service-<?php echo $service['id']; ?>-duration"><?php echo $service['duration']; ?> min</span>
                                                 </div>
                                             </div>
                                         </label>
                                     </div>
-
-                                    <div class="service-option" id="service-option-2">
-                                        <input type="radio" name="service" id="service2" value="beard" required>
-                                        <label for="service2">
-                                            <div class="service-icon beard-icon">
-                                                <i class="fas fa-user-tie"></i>
-                                            </div>
-                                            <div class="service-info">
-                                                <h4 id="service-2-title">Beard Trim</h4>
-                                                <p id="service-2-desc">Precision beard shaping and trim</p>
-                                                <div class="service-price">
-                                                    <span class="price" id="service-2-price">150 Birr</span>
-                                                    <span class="duration" id="service-2-duration">15-20 min</span>
-                                                </div>
-                                            </div>
-                                        </label>
-                                    </div>
-
-                                    <div class="service-option" id="service-option-3">
-                                        <input type="radio" name="service" id="service3" value="premium" required>
-                                        <label for="service3">
-                                            <div class="service-icon premium-icon">
-                                                <i class="fas fa-crown"></i>
-                                            </div>
-                                            <div class="service-info">
-                                                <h4 id="service-3-title">Premium Package</h4>
-                                                <p id="service-3-desc">Haircut + Beard trim + Facial</p>
-                                                <div class="service-price">
-                                                    <span class="price" id="service-3-price">350 Birr</span>
-                                                    <span class="duration" id="service-3-duration">45-60 min</span>
-                                                </div>
-                                            </div>
-                                        </label>
-                                    </div>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
 
-                            <!-- Barber Selection -->
                             <div class="form-section" id="barber-selection-section">
-                                <h3><i class="fas fa-user-tie me-2 text-primary"></i>Select Barber </h3>
+                                <h3><i class="fas fa-user-tie me-2 text-primary"></i>Select Barber *</h3>
                                 <div class="barber-options" id="barber-options">
-                                    <div class="barber-option" id="barber-option-1">
-                                        <input type="radio" name="barber" id="barber1" value="john" required>
-                                        <label for="barber1">
+                                    <?php foreach ($barbers as $barber): 
+                                        $full_name = $barber['first_name'] . ' ' . $barber['last_name'];
+                                    ?>
+                                    <div class="barber-option" id="barber-option-<?php echo $barber['id']; ?>">
+                                        <input type="radio" name="barber" id="barber<?php echo $barber['id']; ?>" 
+                                               value="<?php echo htmlspecialchars($full_name); ?>" 
+                                               data-specialty="<?php echo htmlspecialchars($barber['specialty']); ?>"
+                                               data-rating="<?php echo $barber['rating']; ?>"
+                                               required>
+                                        <label for="barber<?php echo $barber['id']; ?>">
                                             <div class="barber-avatar">
-                                                <i class="fas fa-user"></i>
+                                                <i class="fas fa-user-tie"></i>
                                             </div>
-                                            <div class="barber-details">
-                                                <h5 id="barber-1-name">John Master</h5>
-                                                
-                                                
-                                            </div>
-                                            <div class="barber-status available">
-                                                <i class="fas fa-circle"></i>
+                                            <div class="barber-info">
+                                                <h5 id="barber-<?php echo $barber['id']; ?>-name"><?php echo htmlspecialchars($full_name); ?></h5>
+                                                <p id="barber-<?php echo $barber['id']; ?>-specialty"><?php echo htmlspecialchars($barber['specialty']); ?></p>
+                                                <div class="rating">
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <span id="barber-<?php echo $barber['id']; ?>-rating"><?php echo $barber['rating']; ?></span>
+                                                </div>
                                             </div>
                                         </label>
                                     </div>
-
-                                    <div class="barber-option" id="barber-option-2">
-                                        <input type="radio" name="barber" id="barber2" value="mike" required>
-                                        <label for="barber2">
-                                            <div class="barber-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div class="barber-details">
-                                                <h5 id="barber-2-name">Mike Style</h5>
-                                              
-                                             
-                                            </div>
-                                            <div class="barber-status available">
-                                                <i class="fas fa-circle"></i>
-                                            </div>
-                                        </label>
-                                    </div>
-
-                                    <div class="barber-option" id="barber-option-3">
-                                        <input type="radio" name="barber" id="barber3" value="alex" disabled>
-                                        <label for="barber3">
-                                            <div class="barber-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div class="barber-details">
-                                                <h5 id="barber-3-name">Alex Cut</h5>
-                                                <p class="barber-specialty" id="barber-3-specialty">Modern Styles</p>
-                                              
-                                            </div>
-                                            <div class="barber-status busy">
-                                                <i class="fas fa-circle"></i> 
-                                            </div>
-                                        </label>
-                                    </div>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
 
                             <!-- Date & Time -->
                             <div class="form-section" id="datetime-section">
-                                <div class="row">
-                                    <div class="col-md-6 mb-4">
-                                        
-                                        <div class="date-picker" id="date-picker">
-                                            <div class="date-option" id="date-option-1">
-                                                <input type="radio" name="date" id="today" value="today" required>
-                                                <label for="today">
-                                                    <span class="date-day">Today</span>
-                                                    <span class="date-full">Available slots</span>
-                                                    <span class="badge available" id="today-slots">12 slots</span>
-                                                </label>
-                                            </div>
-                                            <div class="date-option" id="date-option-2">
-                                                <input type="radio" name="date" id="tomorrow" value="tomorrow" required>
-                                                <label for="tomorrow">
-                                                    <span class="date-day">Tomorrow</span>
-                                                    <span class="date-full">More availability</span>
-                                                    <span class="badge available" id="tomorrow-slots">8 slots</span>
-                                                </label>
-                                            </div>
-                                            <div class="date-option" id="date-option-3">
-                                                <input type="radio" name="date" id="saturday" value="saturday" required>
-                                                <label for="saturday">
-                                                    <span class="date-day">Saturday</span>
-                                                    <span class="date-full">Weekend special</span>
-                                                    <span class="badge limited" id="saturday-slots">2 slots</span>
-                                                </label>
-                                            </div>
+                                <!-- Date Picker Row -->
+                                <div id="date-container-col">
+                                    <div class="dt-section-header mb-3">
+                                        <div>
+                                            <h5 class="mb-1"><i class="fas fa-calendar-alt me-2"></i>Select Date</h5>
+                                            <p class="text-muted mb-0 small">Choose a date for your appointment</p>
                                         </div>
+                                        <div id="real-time-status" class="dt-status-badge"></div>
                                     </div>
+                                    <!-- Skeleton strip (replaced by JS) -->
+                                    <div class="date-skeleton-strip" id="date-skeleton-strip">
+                                        <div class="skeleton-date-card"></div>
+                                        <div class="skeleton-date-card"></div>
+                                        <div class="skeleton-date-card"></div>
+                                        <div class="skeleton-date-card"></div>
+                                        <div class="skeleton-date-card"></div>
+                                    </div>
+                                    <div class="date-list" id="date-list"></div>
+                                    <div id="date-info" class="mt-3" style="display:none;"></div>
+                                </div>
 
-                                    <div class="col-md-6">
-                 
-                                        <div class="time-slots" id="time-slots">
-                                            <div class="time-option" id="time-option-1">
-                                                <input type="radio" name="time" id="time1" value="9:00 AM" required>
-                                                <label for="time1">9:00 AM</label>
-                                            </div>
-                                            <div class="time-option booked" id="time-option-2">
-                                                <label>10:00 AM</label>
-                                                <small class="booked-text">Booked</small>
-                                            </div>
-                                            <div class="time-option" id="time-option-3">
-                                                <input type="radio" name="time" id="time3" value="11:00 AM" required>
-                                                <label for="time3">11:00 AM</label>
-                                            </div>
-                                            <div class="time-option" id="time-option-4">
-                                                <input type="radio" name="time" id="time4" value="12:00 PM" required>
-                                                <label for="time4">12:00 PM</label>
-                                            </div>
-                                            <div class="time-option" id="time-option-5">
-                                                <input type="radio" name="time" id="time5" value="2:00 PM" required>
-                                                <label for="time5">2:00 PM</label>
-                                            </div>
-                                            <div class="time-option" id="time-option-6">
-                                                <input type="radio" name="time" id="time6" value="3:00 PM" required>
-                                                <label for="time6">3:00 PM</label>
-                                            </div>
-                                            <div class="time-option" id="time-option-7">
-                                                <input type="radio" name="time" id="time7" value="4:00 PM" required>
-                                                <label for="time7">4:00 PM</label>
-                                            </div>
-                                            <div class="time-option" id="time-option-8">
-                                                <input type="radio" name="time" id="time8" value="5:00 PM" required>
-                                                <label for="time8">5:00 PM</label>
-                                            </div>
-                                            <div class="time-option" id="time-option-9">
-                                                <input type="radio" name="time" id="time9" value="6:00 PM" required>
-                                                <label for="time9">6:00 PM</label>
-                                            </div>
+                                <!-- Divider -->
+                                <div class="dt-divider"></div>
+
+                                <!-- Time Picker Row -->
+                                <div id="time-container-col">
+                                    <div class="dt-section-header mb-3">
+                                        <div>
+                                            <h5 class="mb-1"><i class="fas fa-clock me-2"></i>Select Time</h5>
+                                            <p class="text-muted mb-0 small">Choose an available slot</p>
                                         </div>
+                                        <div id="time-selected-badge" class="dt-status-badge" style="display:none;"></div>
                                     </div>
+                                    <!-- Skeleton grid (replaced by JS) -->
+                                    <div class="time-skeleton-grid" id="time-skeleton-strip">
+                                        <div class="skeleton-time-card"></div>
+                                        <div class="skeleton-time-card"></div>
+                                        <div class="skeleton-time-card"></div>
+                                        <div class="skeleton-time-card"></div>
+                                        <div class="skeleton-time-card"></div>
+                                        <div class="skeleton-time-card"></div>
+                                    </div>
+                                    <div id="time-slots-wrapper"></div>
                                 </div>
                             </div>
 
@@ -378,45 +369,18 @@
                             <!-- Submit Button -->
                             <div class="form-submit" id="form-submit">
                                 <!-- Payment Selection -->
+                                <!-- Payment Notice -->
                                 <div class="payment-section mb-3" id="payment-section">
-                                    <h5 class="mb-2"><i class="fas fa-wallet me-2 text-primary"></i>Payment Method</h5>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment_method" id="payment-telebirr" value="telebirr" checked>
-                                        <label class="form-check-label" for="payment-telebirr">Telebirr (Mobile Money)</label>
+                                    <h5 class="mb-2"><i class="fas fa-shield-alt me-2 text-primary"></i>Secure Payment</h5>
+                                    <p class="small text-muted mb-3">To confirm your booking, a <strong>50% deposit</strong> is required. Payments are processed securely via Chapa.</p>
+                                    
+                                    <div class="deposit-notice p-3 border rounded bg-light">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>Required Deposit:</span>
+                                            <span class="fw-bold text-primary" id="payment-deposit-amount">0.00 ETB</span>
+                                        </div>
                                     </div>
-                                    <div class="ps-4 mt-2 payment-details" id="telebirr-details">
-                                        <label class="form-label small">Telebirr Phone Number</label>
-                                        <input type="tel" class="form-control" id="telebirr-phone" >
-                                        <div class="invalid-feedback d-none" id="telebirr-error"></div>
-                                    </div>
-
-                                    <div class="form-check mt-2">
-                                        <input class="form-check-input" type="radio" name="payment_method" id="payment-cbe" value="cbe">
-                                        <label class="form-check-label" for="payment-cbe">CBE Birr</label>
-                                    </div>
-                                    <div class="ps-4 mt-2 payment-details" id="cbe-details" style="display:none;">
-                                        <label class="form-label small">Phone Number</label>
-                                        <input type="text" class="form-control" id="cbe-ref">
-                                        <div class="invalid-feedback d-none" id="cbe-error"></div>
-                                    </div>
-
-                                    <div class="form-check mt-2">
-                                        <input class="form-check-input" type="radio" name="payment_method" id="payment-bank" value="bank">
-                                        <label class="form-check-label" for="payment-bank">Bank Transfer (e.g., CBE, Awash)</label>
-                                    </div>
-                                    <div class="ps-4 mt-2 payment-details" id="bank-details" style="display:none;">
-                                        <label class="form-label small">Select Bank</label>
-                                        <select class="form-select mb-2" id="bank-select">
-                                            <option value="cbe">Commercial Bank of Ethiopia (CBE)</option>
-                                            <option value="awash">Awash Bank</option>
-                                            <option value="dashen">Dashen Bank</option>
-                                            <option value="abyssinia">Abyssinia Bank</option>
-                                        </select>
-                                        <label class="form-label small">Account Number / Reference</label>
-                                        <input type="text" class="form-control" id="bank-ref" placeholder="Account number or transaction reference">
-                                        <div class="invalid-feedback d-none" id="bank-error"></div>
-                                        <div class="small text-muted mt-2 payment-small-note">After payment, enter the transaction reference above. We'll confirm manually.</div>
-                                    </div>
+                                    <p class="small text-muted mt-2 mb-0"><i class="fas fa-info-circle me-1"></i> You will be redirected to Chapa to complete the payment.</p>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary btn-lg w-100" id="confirm-booking-btn">
@@ -451,9 +415,13 @@
                             <span>Time:</span>
                             <strong id="summary-time">Select time</strong>
                         </div>
+                        <div class="summary-item mt-2" id="summary-deposit-row" style="display: none;">
+                            <span>50% Deposit:</span>
+                            <strong id="summary-deposit" class="text-warning">0.00 ETB</strong>
+                        </div>
                         <div class="summary-total">
                             <span>Total Amount:</span>
-                            <strong id="summary-price">$0.00</strong>
+                            <strong id="summary-price">0.00 ETB</strong>
                         </div>
                     </div>
 
@@ -561,8 +529,13 @@
                 <div class="col-lg-4" id="footer-right">
                     <h5 class="fw-bold mb-3">Working Hours</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2">Monday - Sunday: 6:00 AM - 6:00 PM</li>
-                       
+                        <?php 
+                        $stmt = $pdo->query("SELECT day_of_week, open_time, close_time, is_closed FROM working_hours ORDER BY FIELD(day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')");
+                        while($row = $stmt->fetch()):
+                            $time_range = $row['is_closed'] ? 'Closed' : date("g:i A", strtotime($row['open_time'])) . " - " . date("g:i A", strtotime($row['close_time']));
+                        ?>
+                        <li class="mb-1 small"><?php echo $row['day_of_week']; ?>: <?php echo $time_range; ?></li>
+                        <?php endwhile; ?>
                     </ul>
                 </div>
             </div>
@@ -589,6 +562,11 @@
     <!-- Auth (logout handling) -->
     <script src="../assets/js/auth.js"></script>
     <!-- Custom JavaScript -->
-    <script src="../assets/js/bookappointment.js"></script>
+    <script>
+        const BASE_URL = '<?php echo BASE_URL; ?>';
+    </script>
+    <script src="../assets/js/bookappointment.js?v=<?php echo time(); ?>"></script>
+    <!-- Notifications -->
+    <script src="../assets/js/notifications.js"></script>
 </body>
 </html>
