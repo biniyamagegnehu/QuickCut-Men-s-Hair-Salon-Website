@@ -451,59 +451,115 @@ body {
     color: #ffc107;
 }
 
-/* Time Slots */
-.time-slots {
+/* Time Slots Grid System */
+.time-selection-container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #edf2f7;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    margin-top: 0;
+    animation: fadeIn 0.5s ease;
+}
+
+.time-selection-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f8fafc;
+}
+
+.time-period-group {
+    margin-bottom: 24px;
+}
+
+.time-period-group:last-child {
+    margin-bottom: 0;
+}
+
+.time-period-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #4a5568;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.time-period-label i {
+    color: var(--primary-color);
+}
+
+.time-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
 }
 
-.time-option {
+.time-slot {
     position: relative;
+    cursor: pointer;
+    user-select: none;
 }
 
-.time-option input[type="radio"] {
+.time-slot input {
     display: none;
 }
 
-.time-option label {
-    display: block;
-    padding: 0.8rem;
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    background: white;
+.time-slot label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 10px;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
 }
 
-.time-option input[type="radio"]:checked + label {
-    background: var(--primary-color);
-    color: white;
+.time-slot:hover:not(.disabled) label {
     border-color: var(--primary-color);
-    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.2);
+    background: rgba(255, 107, 53, 0.04);
+    transform: translateY(-2px);
 }
 
-.time-option.selected label {
+.time-slot input:checked + label {
     background: var(--primary-color);
-    color: white;
     border-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
-.time-option.booked label {
-    background: #f8f9fa;
-    color: #adb5bd;
+.time-slot.disabled {
     cursor: not-allowed;
-    border-style: dashed;
-    position: relative;
+    opacity: 0.5;
 }
 
-.time-option.booked .booked-text {
+.time-slot.disabled label {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    border-style: dashed;
+    color: #94a3b8;
+}
+
+.time-slot.booked label {
+    background: #fff5f5;
+    border-color: #feb2b2;
+    color: #c53030;
+}
+
+.slot-time {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.slot-status {
     font-size: 0.7rem;
-    color: #dc3545;
-    font-weight: 600;
-    margin-top: 0.25rem;
+    margin-top: 2px;
 }
 
 /* Textarea */
@@ -1197,6 +1253,508 @@ input:required:valid {
     100% { transform: scale(1); }
 }
 
+@keyframes selectPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 107, 53, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+}
+
 .pulse {
     animation: pulse 0.5s;
 }
+
+.select-pulse {
+    animation: selectPulse 0.4s ease;
+}
+/* Premium Time Slot UI */
+.time-selection-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.time-period-group {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f0f0f0;
+}
+
+.time-period-label {
+    font-weight: 700;
+    color: #121212;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.time-period-label i {
+    color: #ff6b35;
+    font-size: 1.2rem;
+}
+
+.time-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+}
+
+/* Mobile: 2-3 columns */
+@media (max-width: 480px) {
+    .time-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop: 4-6 columns */
+@media (min-width: 992px) {
+    .time-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}
+
+.time-slot {
+    position: relative;
+}
+
+.time-slot input {
+    display: none;
+}
+
+.time-slot label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 10px;
+    background: #ffffff;
+    border: 2px solid #eef0f2;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 70px;
+    width: 100%;
+}
+
+/* Available State */
+.time-slot:not(.disabled):hover label {
+    transform: translateY(-3px) scale(1.03);
+    border-color: #ff8b5c;
+    box-shadow: 0 8px 20px rgba(255, 107, 53, 0.15);
+}
+
+/* Selected State */
+.time-slot input:checked + label {
+    background: #ff6b35;
+    border-color: #ff6b35;
+    color: #fff;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(255, 107, 53, 0.35);
+}
+
+.time-slot input:checked + label .slot-time {
+    color: #fff;
+}
+
+.time-slot input:checked + label .slot-status {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+/* Unavailable / Booked State */
+.time-slot.disabled label {
+    background: #f8f9fa;
+    border-color: #f1f3f5;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.time-slot.disabled .slot-time {
+    color: #adb5bd;
+}
+
+.time-slot.disabled .slot-status {
+    color: #adb5bd;
+    background: #e9ecef;
+}
+
+.slot-time {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #121212;
+    margin-bottom: 4px;
+    transition: color 0.2s;
+}
+
+.slot-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    background: #f1f3f5;
+    border-radius: 20px;
+    color: #6c757d;
+    transition: all 0.2s;
+}
+
+/* Selected Display Info */
+.selected-time-info {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(13, 110, 253, 0.1);
+    animation: fadeIn 0.4s ease;
+}
+
+.selected-time-info strong {
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+
+/* =====================================================
+   DATE & TIME SECTION � PREMIUM REDESIGN
+   ===================================================== */
+
+/* --- Section shared header row ---------------------- */
+.dt-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.dt-section-header h5 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #121212;
+    margin: 0;
+}
+
+.dt-section-header h5 i {
+    color: #ff6b35;
+}
+
+/* Status / selected badge that appears in header */
+.dt-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .8rem;
+    font-weight: 600;
+    padding: .3rem .8rem;
+    border-radius: 20px;
+    background: rgba(25,135,84,.08);
+    color: #198754;
+    white-space: nowrap;
+    animation: fadeIn .3s ease;
+}
+
+.dt-status-badge i { font-size: .75rem; }
+
+/* Divider between date and time sections */
+.dt-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e9ecef 20%, #e9ecef 80%, transparent);
+    margin: 2rem 0;
+}
+
+/* =====================================================
+   DATE CARDS � horizontal scroll strip
+   ===================================================== */
+#date-container-col .date-list {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 8px 4px 16px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    /* hide scrollbar but keep scrollable */
+    scrollbar-width: none;
+}
+#date-container-col .date-list::-webkit-scrollbar { display: none; }
+
+/* Individual date card */
+.date-card {
+    flex: 0 0 90px;
+    min-width: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 14px 8px;
+    background: #ffffff;
+    border: 2px solid #eef0f2;
+    border-radius: 16px;
+    cursor: pointer;
+    text-align: center;
+    scroll-snap-align: start;
+    transition: all .22s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    user-select: none;
+}
+
+.date-card:hover:not(.date-card--closed) {
+    border-color: #ff8b5c;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 22px rgba(255,107,53,.18);
+}
+
+.date-card--selected {
+    background: #ff6b35;
+    border-color: #ff6b35;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 28px rgba(255,107,53,.32);
+}
+
+.date-card--closed {
+    background: #f8f9fa;
+    border-color: #f1f3f5;
+    cursor: not-allowed;
+    opacity: .6;
+}
+
+/* Card inner parts */
+.date-card__day {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: #6c757d;
+    transition: color .2s;
+}
+
+.date-card__num {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #121212;
+    transition: color .2s;
+}
+
+.date-card__month {
+    font-size: .72rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    transition: color .2s;
+}
+
+.date-card__label {
+    margin-top: 6px;
+    font-size: .68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(255,107,53,.1);
+    color: #ff6b35;
+    transition: all .2s;
+}
+
+.date-card--closed .date-card__label {
+    background: #e9ecef;
+    color: #adb5bd;
+}
+
+/* Selected state text overrides */
+.date-card--selected .date-card__day,
+.date-card--selected .date-card__num,
+.date-card--selected .date-card__month { color: rgba(255,255,255,.85); }
+
+.date-card--selected .date-card__num { color: #fff; }
+
+.date-card--selected .date-card__label {
+    background: rgba(255,255,255,.22);
+    color: #fff;
+}
+
+/* Working hours chip below date strip */
+.date-info-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .82rem;
+    color: #495057;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 20px;
+    padding: .35rem 1rem;
+    margin-top: .25rem;
+}
+
+.date-info-chip i { color: #ff6b35; font-size: .75rem; }
+.date-info-chip .chip-closed { color: #dc3545; font-weight: 700; }
+
+/* Real-time open/closed pill */
+#real-time-status small { font-size: .82rem; }
+
+/* =====================================================
+   TIME SLOTS � redesigned
+   ===================================================== */
+
+/* Period group */
+.ts-period {
+    margin-bottom: 1.75rem;
+}
+
+.ts-period__label {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6c757d;
+    margin-bottom: 1rem;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.ts-period__label i {
+    color: #ff6b35;
+    font-size: .9rem;
+}
+
+/* Responsive grid: 3 cols mobile ? 4 cols tablet ? 5 cols desktop */
+.ts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+@media (min-width: 480px)  { .ts-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 768px)  { .ts-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1200px) { .ts-grid { grid-template-columns: repeat(5, 1fr); } }
+
+/* Slot wrapper */
+.ts-slot { position: relative; }
+.ts-slot input { position: absolute; opacity: 0; pointer-events: none; }
+
+/* Slot label / card */
+.ts-slot label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 6px;
+    min-height: 64px;
+    background: #ffffff;
+    border: 2px solid #eef0f2;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all .22s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
+    width: 100%;
+    user-select: none;
+}
+
+/* Hover � available */
+.ts-slot:not(.ts-slot--booked):not(.ts-slot--closed):hover label {
+    border-color: #ff8b5c;
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 8px 20px rgba(255,107,53,.18);
+}
+
+/* Selected */
+.ts-slot input:checked + label {
+    background: #ff6b35;
+    border-color: #ff6b35;
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 10px 26px rgba(255,107,53,.32);
+}
+
+.ts-slot input:checked + label .ts-slot__time { color: #fff; }
+.ts-slot input:checked + label .ts-slot__ampm {
+    background: rgba(255,255,255,.2);
+    color: #fff;
+}
+
+/* Booked / Closed */
+.ts-slot--booked label,
+.ts-slot--closed label {
+    background: #f8f9fa;
+    border-color: #f1f3f5;
+    cursor: not-allowed;
+    opacity: .62;
+}
+
+/* Slot text */
+.ts-slot__time {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #121212;
+    transition: color .2s;
+    line-height: 1;
+}
+
+.ts-slot__ampm {
+    font-size: .68rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: #f1f3f5;
+    color: #6c757d;
+    transition: all .2s;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+/* Empty state */
+.ts-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+    color: #adb5bd;
+    font-size: .9rem;
+    text-align: center;
+    background: #fafafa;
+    border: 2px dashed #e9ecef;
+    border-radius: 16px;
+}
+
+/* =====================================================
+   SKELETON LOADERS
+   ===================================================== */
+@keyframes shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position:  400px 0; }
+}
+
+.skeleton-date-card,
+.skeleton-time-card {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: 14px;
+}
+
+/* Date skeleton strip */
+.date-skeleton-strip {
+    display: flex;
+    gap: 12px;
+    padding: 8px 4px 16px;
+    overflow: hidden;
+}
+.skeleton-date-card {
+    flex: 0 0 90px;
+    height: 110px;
+}
+
+/* Time skeleton grid */
+.time-skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+@media (min-width: 480px) { .time-skeleton-grid { grid-template-columns: repeat(4, 1fr); } }
+.skeleton-time-card { height: 64px; }
