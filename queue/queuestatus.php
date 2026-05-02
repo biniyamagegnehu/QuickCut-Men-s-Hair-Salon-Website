@@ -1,493 +1,338 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickCut - Queue Status</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="../assets/css/queuestatus.css">
-    <!-- Custom Styles for Notifications -->
-    <style>
-        .notification-settings-panel.hidden {
-            display: none;
-        }
-        
-        .notification-settings-panel {
-            animation: slideDown 0.3s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .notification-bell {
-            animation: bellRing 2s infinite;
-        }
-        
-        @keyframes bellRing {
-            0%, 100% { transform: rotate(0); }
-            5%, 15% { transform: rotate(20deg); }
-            10%, 20% { transform: rotate(-20deg); }
-            25% { transform: rotate(0); }
-        }
-        
-        #enable-notifications-btn.btn-success {
-            background-color: #28a745;
-            border-color: #28a745;
-            color: white;
-        }
-        
-        #enable-notifications-btn.btn-success:hover {
-            background-color: #218838;
-            border-color: #1e7e34;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
-        }
-    </style>
-</head>
-<body id="queue-status-body">
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="queue-nav">
-        <div class="container">
-            <a class="navbar-brand logo" href="../welcome.php" id="queue-logo">
-                <i class="fas fa-cut me-2"></i>QuickCut
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" id="queue-menu-toggle">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto" id="queue-nav-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../booking/bookappointment.php" id="nav-book"><i class="fas fa-calendar-alt me-1"></i>Book Appointment</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="queuestatus.php" id="nav-queue"><i class="fas fa-list-ol me-1"></i>Queue Status</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../aboutus.php" id="nav-about"><i class="fas fa-info-circle me-1"></i>About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../welcome.php" id="nav-logout"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
-                    </li>
-                </ul>
-                <a href="../booking/bookappointment.php" class="btn btn-primary ms-lg-3 mt-2 mt-lg-0 book-now-btn" id="queue-book-now">
-                    <i class="fas fa-scissors me-1"></i>Book Now
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="container mt-5 pt-5" id="queue-main">
-        <div class="row align-items-start min-vh-75">
-            <!-- Left Column - Queue Status -->
-            <div class="col-lg-8 mb-5 mb-lg-0" id="queue-left-column">
-                <div class="card login-card shadow-lg" id="queue-status-card">
-                    <div class="card-body p-4 p-md-5">
-                        <div class="text-center mb-4">
-                            <h2 class="fw-bold text-primary" id="queue-title">Queue Status</h2>
-                            <p class="text-muted" id="queue-subtitle">Track your position in real-time</p>
-                        </div>
-                        
-                        <!-- Current Position -->
-                        <div class="position-card mb-4" id="position-card">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <div class="position-number" id="position-number">#4</div>
-                                </div>
-                                <div class="col">
-                                    <h3 class="fw-bold mb-1" id="position-text">You're #4 in line</h3>
-                                    <p class="text-muted mb-0" id="position-ahead">3 people ahead of you</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Stats Cards -->
-                        <div class="row g-4 mb-4" id="queue-stats">
-                            <div class="col-md-6">
-                                <div class="stats-card p-4 text-center">
-                                    <div class="stats-label mb-2">Estimated Wait</div>
-                                    <div class="stats-value" id="estimated-wait">~60 minutes</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="stats-card p-4 text-center">
-                                    <div class="stats-label mb-2">Current Queue</div>
-                                    <div class="stats-value" id="current-queue">6 people waiting</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="row g-3 mb-4" id="action-buttons">
-                            <div class="col-md-6">
-                                <button class="btn btn-primary btn-lg w-100" id="refresh-queue-btn">
-                                    <i class="fas fa-sync-alt me-2"></i>Refresh Queue
-                                </button>
-                            </div>
-                            <div class="col-md-6">
-                                <button class="btn btn-outline-primary btn-lg w-100" id="enable-notifications-btn">
-                                    <i class="fas fa-bell me-2"></i>Enable Notifications
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Notification Settings Panel -->
-                        <div class="notification-settings-panel mt-4 hidden" id="notification-settings">
-                            <div class="card">
-                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0"><i class="fas fa-cog me-2"></i>Notification Settings</h6>
-                                    <button type="button" class="btn-close" id="close-settings-btn"></button>
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="queue-updates-toggle" checked>
-                                        <label class="form-check-label" for="queue-updates-toggle">
-                                            <i class="fas fa-users me-1"></i> Queue Position Updates
-                                        </label>
-                                        <small class="text-muted d-block mt-1">Get notified when your position changes</small>
-                                    </div>
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="appointment-reminders-toggle" checked>
-                                        <label class="form-check-label" for="appointment-reminders-toggle">
-                                            <i class="fas fa-calendar-alt me-1"></i> Appointment Reminders
-                                        </label>
-                                        <small class="text-muted d-block mt-1">Reminders before your appointment</small>
-                                    </div>
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="promotions-toggle" checked>
-                                        <label class="form-check-label" for="promotions-toggle">
-                                            <i class="fas fa-tag me-1"></i> Promotions & Offers
-                                        </label>
-                                        <small class="text-muted d-block mt-1">Special offers and discounts</small>
-                                    </div>
-                                    <div class="form-check form-switch mb-4">
-                                        <input class="form-check-input" type="checkbox" id="emergency-updates-toggle" checked>
-                                        <label class="form-check-label" for="emergency-updates-toggle">
-                                            <i class="fas fa-exclamation-triangle me-1"></i> Emergency Updates
-                                        </label>
-                                        <small class="text-muted d-block mt-1">Important service announcements</small>
-                                    </div>
-                                    
-                                    <div class="border-top pt-3">
-                                        <button class="btn btn-outline-primary btn-sm w-100" id="test-notification-btn">
-                                            <i class="fas fa-bell me-1"></i> Test Notification
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Queue Timeline -->
-                        <div class="timeline-section" id="timeline-section">
-                            <h4 class="fw-bold mb-4" id="timeline-title">Queue Timeline</h4>
-                            <div class="timeline" id="queue-timeline">
-                                <div class="timeline-item current-serving" id="timeline-current">
-                                    <div class="timeline-content">
-                                        <h5 class="fw-bold mb-1">Being served</h5>
-                                        <span class="badge bg-success">Now</span>
-                                    </div>
-                                    <div class="timeline-time" id="current-time">0 min</div>
-                                </div>
-                                <div class="timeline-item" id="timeline-1">
-                                    <div class="timeline-content">
-                                        <h5 class="fw-bold mb-1">Customer</h5>
-                                    </div>
-                                    <div class="timeline-time" id="time-1">~15 min</div>
-                                </div>
-                                <div class="timeline-item" id="timeline-2">
-                                    <div class="timeline-content">
-                                        <h5 class="fw-bold mb-1">Customer</h5>
-                                    </div>
-                                    <div class="timeline-time" id="time-2">~30 min</div>
-                                </div>
-                                <div class="timeline-item current-you" id="timeline-you">
-                                    <div class="timeline-content">
-                                        <h5 class="fw-bold mb-1 text-primary">You</h5>
-                                    </div>
-                                    <div class="timeline-time" id="your-time">~45 min</div>
-                                </div>
-                                <div class="timeline-item" id="timeline-3">
-                                    <div class="timeline-content">
-                                        <h5 class="fw-bold mb-1">Customer</h5>
-                                    </div>
-                                    <div class="timeline-time" id="time-3">~60 min</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Additional Queue Info -->
-                        <div class="row mt-4" id="additional-queue-info">
-                            <div class="col-md-6">
-                                <div class="small text-muted" id="last-updated-time">
-                                    Last updated: <span id="update-time">--:--</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 text-end">
-                                <div class="small text-muted" id="business-status">
-                                    <span id="status-badge" class="badge bg-success">Open</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Real-time Status -->
-                        <div class="mt-3" id="wait-time-details">
-                            <div class="small text-muted">
-                                <i class="fas fa-info-circle me-1"></i> <span id="wait-time-info">Based on historical queue data</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- What to Expect Section -->
-                <div class="card login-card shadow-lg mt-4" id="expectations-card">
-                    <div class="card-body p-4 p-md-5">
-                        <h4 class="fw-bold mb-4" id="expectations-title">What to Expect</h4>
-                        <ul class="expect-list" id="expectations-list">
-                            <li class="mb-3" id="expect-1">
-                                <i class="fas fa-info-circle text-primary me-2"></i>
-                                Queue times are estimated and may vary based on service complexity
-                            </li>
-                            <li class="mb-3" id="expect-2">
-                                <i class="fas fa-bell text-primary me-2"></i>
-                                You'll receive a notification when you're next in line (if enabled)
-                            </li>
-                            <li class="mb-3" id="expect-3">
-                                <i class="fas fa-user-check text-primary me-2"></i>
-                                Please arrive at the salon when you're in the top 2 positions
-                            </li>
-                            <li id="expect-4">
-                                <i class="fas fa-sync-alt text-primary me-2"></i>
-                                Refresh the page to see real-time queue updates
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Queue History Section -->
-                <div class="card login-card shadow-lg mt-4" id="history-card">
-                    <div class="card-body p-4 p-md-5">
-                        <h4 class="fw-bold mb-4" id="history-title">
-                            <i class="fas fa-history me-2"></i>Queue History
-                        </h4>
-                        <div class="queue-history-container" id="queue-history">
-                            <div class="text-muted small">No queue history yet</div>
-                        </div>
-                        <div class="mt-3" id="daily-stats"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Right Column - Info & Features -->
-            <div class="col-lg-4" id="queue-right-column">
-                <!-- Contact Info Card -->
-                <div class="card login-card shadow-lg mb-4" id="contact-card">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3" id="contact-title">
-                            <i class="fas fa-cut me-2 text-primary"></i>QuickCut
-                        </h5>
-                        <p class="text-muted small mb-4" id="contact-description">
-                            Skip the wait. Get the cut. QuickCut makes hair appointments fast, easy, and convenient.
-                        </p>
-                        
-                        <div class="contact-info mb-4" id="contact-info">
-                            <h6 class="fw-bold mb-3">Contact Us</h6>
-                            <ul class="list-unstyled">
-                                <li class="mb-2" id="contact-phone">
-                                    <i class="fas fa-phone me-2 text-primary"></i>
-                                    <span id="phone-number">(+251) 921456765</span>
-                                </li>
-                                <li class="mb-2" id="contact-email">
-                                    <i class="fas fa-envelope me-2 text-primary"></i>
-                                    <span id="email-address">info@quickcut.com</span>
-                                </li>
-                                <li id="contact-address">
-                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>
-                                    <span id="address">123 Main Street, Downtown</span>
-                                </li>
-                            </ul>
-                        </div>
-                        
-                        <div class="working-hours" id="working-hours">
-                            <h6 class="fw-bold mb-3">Working Hours</h6>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">Monday - Sunday: 6:00 AM - 6:00 PM</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Features Card -->
-                <div class="card login-card shadow-lg" id="features-card">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3" id="features-title">
-                            Skip the wait. <span class="text-primary">Get the cut.</span>
-                        </h5>
-                        <p class="text-muted small mb-4" id="features-description">
-                            Book your appointment online and avoid long queues. 
-                            QuickCut connects you with the best barbers and stylists in your area.
-                        </p>
-                        
-                        <div class="features" id="features-list">
-                            <div class="feature-item mb-3" id="feature-1">
-                                <div class="feature-icon-small me-3">
-                                    <i class="fas fa-clock text-primary"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-1">Quick Booking</h6>
-                                    <p class="text-muted small mb-0">Book appointments in under 2 minutes</p>
-                                </div>
-                            </div>
-                            <div class="feature-item mb-3" id="feature-2">
-                                <div class="feature-icon-small me-3">
-                                    <i class="fas fa-calendar-check text-primary"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-1">Real-time Updates</h6>
-                                    <p class="text-muted small mb-0">Live queue status and notifications</p>
-                                </div>
-                            </div>
-                            <div class="feature-item mb-3" id="feature-3">
-                                <div class="feature-icon-small me-3">
-                                    <i class="fas fa-star text-primary"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-1">Top Professionals</h6>
-                                    <p class="text-muted small mb-0">Rated and reviewed barbers & stylists</p>
-                                </div>
-                            </div>
-                            <div class="feature-item" id="feature-4">
-                                <div class="feature-icon-small me-3">
-                                    <i class="fas fa-credit-card text-primary"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-1">Secure Payments</h6>
-                                    <p class="text-muted small mb-0">Safe and easy online payments</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="social-links mt-4 pt-3 border-top" id="social-links">
-                            <p class="small text-muted mb-2" id="follow-text">Follow Us</p>
-                            <div class="d-flex" id="social-icons">
-                                <a href="https://facebook.com" target="_blank" class="social-icon me-3" id="facebook-link">
-                                    <i class="fab fa-facebook-f"></i>
-                                </a>
-                                <a href="https://twitter.com" target="_blank" class="social-icon me-3" id="twitter-link">
-                                    <i class="fab fa-twitter"></i>
-                                </a>
-                                <a href="https://instagram.com" target="_blank" class="social-icon me-3" id="instagram-link">
-                                    <i class="fab fa-instagram"></i>
-                                </a>
-                                <a href="https://tiktok.com" target="_blank" class="social-icon" id="tiktok-link">
-                                    <i class="fab fa-tiktok"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Emergency Updates Card -->
-                <div class="card login-card shadow-lg mt-4" id="emergency-updates-card">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3" id="emergency-title">
-                            <i class="fas fa-exclamation-triangle me-2 text-warning"></i>Emergency Updates
-                        </h5>
-                        <div id="emergency-updates">
-                            <div class="text-muted small">No emergency updates at this time</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer-section" id="queue-footer">
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-lg-4 mb-4 mb-lg-0" id="footer-left">
-                    <h5 class="fw-bold mb-3" id="footer-logo">
-                        <i class="fas fa-cut me-2 text-primary"></i>QuickCut
-                    </h5>
-                    <p class="text-light small" id="footer-description">
-                        Skip the wait. Get the cut. QuickCut makes hair appointments fast, easy, and convenient.
-                    </p>
-                    <div class="social-links mt-3" id="footer-social">
-                        <a href="https://facebook.com" target="_blank" class="text-white me-3" id="footer-facebook">
-                            <i class="fab fa-facebook fa-lg"></i>
-                        </a>
-                        <a href="https://twitter.com" target="_blank" class="text-white me-3" id="footer-twitter">
-                            <i class="fab fa-twitter fa-lg"></i>
-                        </a>
-                        <a href="https://instagram.com" target="_blank" class="text-white me-3" id="footer-instagram">
-                            <i class="fab fa-instagram fa-lg"></i>
-                        </a>
-                        <a href="https://tiktok.com" target="_blank" class="text-white" id="footer-tiktok">
-                            <i class="fab fa-tiktok fa-lg"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 mb-4 mb-lg-0" id="footer-middle">
-                    <h5 class="fw-bold mb-3">Contact Us</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <i class="fas fa-phone me-2 text-primary"></i>
-                            (+251) 921456765
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-envelope me-2 text-primary"></i>
-                            quickcut@gmail.com
-                        </li>
-                        <li>
-                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>
-                            123 Main Street, Downtown
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-4" id="footer-right">
-                    <h5 class="fw-bold mb-3">Working Hours</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">Monday - Sunday: 6:00 AM - 6:00 PM</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <hr class="bg-light my-4" id="footer-divider">
-            
-            <div class="text-center" id="footer-bottom">
-                <p class="mb-0" id="copyright">
-                    © 2025 QuickCut. All rights reserved. | 
-                    <a href="#" class="text-decoration-none text-primary" id="privacy-policy">Privacy Policy</a> | 
-                    <a href="#" class="text-decoration-none text-primary" id="terms-service">Terms of Service</a>
-                </p>
-            </div>
-        </div>
-    </footer>
+<?php
+session_start();
+require_once '../includes/db.php';
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../auth/login.php");
+    exit;
+}
+include '../includes/header.php';
+?>
+<style>
+    .queue-page-wrapper {
+        padding-top: 120px;
+        padding-bottom: 80px;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+    }
+    .status-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        margin-bottom: 40px;
+        border: 1px solid #eee;
+    }
+    .pos-num {
+        font-size: 4rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        font-family: 'Playfair Display', serif;
+    }
     
-    <!-- Back to Top Button -->
-    <button class="btn btn-primary scroll-to-top" style="display: none;" id="back-to-top">
-        <i class="fas fa-chevron-up"></i>
-    </button>
+    /* Date Selector */
+    .date-selector {
+        display: flex;
+        gap: 15px;
+        overflow-x: auto;
+        padding: 10px 5px;
+        margin-bottom: 30px;
+        scrollbar-width: none; /* Firefox */
+    }
+    .date-selector::-webkit-scrollbar { display: none; }
+    
+    .date-btn {
+        flex: 0 0 100px;
+        background: white;
+        border: 1px solid #eee;
+        padding: 15px 10px;
+        border-radius: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .date-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    }
+    .date-btn .day { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .date-btn .num { font-size: 1.5rem; font-weight: 800; display: block; }
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Auth (logout handling) -->
-    <script src="../assets/js/auth.js"></script>
-    <!-- Custom JavaScript -->
-    <script src="../assets/js/queuestatus.js"></script>
-</body>
-</html>
+    /* Queue List */
+    .queue-container {
+        background: white;
+        border-radius: 20px;
+        padding: 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        overflow: hidden;
+        border: 1px solid #eee;
+    }
+    .queue-header {
+        background: #1a1a1a;
+        color: white;
+        display: grid;
+        grid-template-columns: 80px 1.5fr 1.5fr 1fr 120px;
+        padding: 15px 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    .queue-item {
+        display: grid;
+        grid-template-columns: 80px 1.5fr 1.5fr 1fr 120px;
+        padding: 20px;
+        border-bottom: 1px solid #f5f5f5;
+        align-items: center;
+        transition: background 0.3s ease;
+    }
+    .queue-item:hover { background-color: #fafafa; }
+    .queue-item.user-row { background-color: #fff9f6; }
+    
+    .q-pos { font-weight: 800; font-size: 1.2rem; color: #aaa; }
+    .q-name { font-weight: 700; color: #333; }
+    .q-info { font-size: 0.9rem; color: #666; }
+    .q-status { text-align: right; }
+    
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .status-serving { background: #e8f5e9; color: #2e7d32; }
+    .status-waiting { background: #fff8e1; color: #f57c00; }
+    .status-confirmed { background: #e3f2fd; color: #1565c0; }
+    .status-pending { background: #f5f5f5; color: #888; }
+
+    .ready-banner {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        padding: 15px;
+        border-radius: 12px;
+        margin-top: 20px;
+        font-weight: 700;
+        text-align: center;
+        display: none;
+        animation: pulse 2s infinite;
+    }
+</style>
+
+<div class="queue-page-wrapper">
+    <div class="container">
+        
+        <!-- Page Header -->
+        <div class="text-center mb-5">
+            <h6 class="text-primary text-uppercase fw-bold">Live Status</h6>
+            <h2 class="display-5 fw-bold">Appointment Queue</h2>
+            <p class="text-muted">Stay updated on your position and wait times</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <!-- My Status Card -->
+                <div class="status-card text-center" id="my-status-box">
+                    <div id="no-booking" style="display:none;">
+                        <i class="fas fa-calendar-times fa-3x mb-3 text-muted"></i>
+                        <h3 class="fw-bold">No active booking today</h3>
+                        <p class="text-muted">Your next appointment will appear here when it's near.</p>
+                        <a href="../booking/bookappointment.php" class="btn btn-primary btn-lg mt-3 book-now-btn">Book Now</a>
+                    </div>
+
+                    <div id="has-booking">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <div class="pos-num" id="u-pos">--</div>
+                                <div class="text-muted small fw-bold uppercase">Position</div>
+                            </div>
+                            <div class="col-md-6">
+                                <h3 class="fw-bold" id="u-msg">Updating status...</h3>
+                                <div class="d-flex justify-content-center gap-4 mt-3">
+                                    <div>
+                                        <div class="text-muted small fw-bold">BARBER</div>
+                                        <div class="fw-bold" id="u-barber">--</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small fw-bold">SERVICE</div>
+                                        <div class="fw-bold" id="u-service">--</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="display-6 fw-bold text-primary" id="u-time">-- min</div>
+                                <div class="text-muted small fw-bold">Est. Wait Time</div>
+                            </div>
+                        </div>
+                        <div id="u-banner" class="ready-banner">
+                            <i class="fas fa-bolt me-2"></i>YOU ARE NEXT! PLEASE BE READY
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Scroller -->
+                <h5 class="fw-bold mb-3"><i class="fas fa-calendar-day me-2 text-primary"></i>Schedule for All Days</h5>
+                <div class="date-selector" id="date-picker">
+                    <!-- Dates will be injected here -->
+                </div>
+
+                <!-- Full Queue List -->
+                <div class="queue-container">
+                    <div class="queue-header">
+                        <div>POS</div>
+                        <div>CUSTOMER</div>
+                        <div>SERVICE</div>
+                        <div>BARBER</div>
+                        <div class="text-end">STATUS</div>
+                    </div>
+                    <div id="q-list">
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2 text-muted">Loading schedule...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-4 text-muted small" id="last-updated">
+                    Last updated: --:--
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentSelectedDate = '<?php echo date('Y-m-d'); ?>';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initDatePicker();
+        refreshAllData();
+        setInterval(refreshAllData, 20000); // Auto refresh every 20s
+    });
+
+    function initDatePicker() {
+        const picker = document.getElementById('date-picker');
+        const today = new Date();
+        
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            
+            const dateStr = date.toISOString().split('T')[0];
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+            const dayNum = date.getDate();
+            
+            const btn = document.createElement('div');
+            btn.className = `date-btn ${i === 0 ? 'active' : ''}`;
+            btn.dataset.date = dateStr;
+            btn.innerHTML = `
+                <span class="day">${dayName}</span>
+                <span class="num">${dayNum}</span>
+            `;
+            
+            btn.onclick = () => {
+                document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSelectedDate = dateStr;
+                fetchQueue(dateStr);
+            };
+            
+            picker.appendChild(btn);
+        }
+    }
+
+    async function refreshAllData() {
+        await Promise.all([
+            fetchPosition(),
+            fetchQueue(currentSelectedDate)
+        ]);
+        
+        const now = new Date();
+        document.getElementById('last-updated').textContent = 'Last updated: ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+
+    async function fetchPosition() {
+        try {
+            const res = await fetch(BASE_URL + 'queue/get_position.php');
+            const p = await res.json();
+            
+            const hasBooking = document.getElementById('has-booking');
+            const noBooking = document.getElementById('no-booking');
+
+            if (p.success) {
+                hasBooking.style.display = 'block';
+                noBooking.style.display = 'none';
+                
+                document.getElementById('u-barber').textContent = p.barber_name || 'Any';
+                document.getElementById('u-service').textContent = p.service_name;
+
+                if (p.type === 'upcoming') {
+                    document.getElementById('u-pos').textContent = '...';
+                    document.getElementById('u-time').textContent = '--';
+                    const dateObj = new Date(p.appointment_date);
+                    const dateStr = dateObj.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                    document.getElementById('u-msg').innerHTML = `Next: <span class="text-primary">${dateStr} at ${p.appointment_time}</span>`;
+                    document.getElementById('u-banner').style.display = 'none';
+                } else {
+                    document.getElementById('u-pos').textContent = p.position;
+                    document.getElementById('u-time').textContent = p.estimated_wait_time_minutes;
+                    
+                    let msg = "You're in line. Please wait.";
+                    let alert = false;
+
+                    if (p.status === 'in_progress') {
+                        msg = "It's your turn! Head to the chair.";
+                        document.getElementById('u-time').textContent = '0';
+                    } else if (p.position <= 2) {
+                        msg = "You're almost there! Be ready.";
+                        alert = true;
+                    }
+                    
+                    document.getElementById('u-msg').textContent = msg;
+                    document.getElementById('u-banner').style.display = alert ? 'block' : 'none';
+                }
+            } else {
+                hasBooking.style.display = 'none';
+                noBooking.style.display = 'block';
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    async function fetchQueue(date) {
+        try {
+            const res = await fetch(BASE_URL + 'queue/get_queue.php?date=' + date);
+            const data = await res.json();
+            const list = document.getElementById('q-list');
+
+            if (data.success && data.queue && data.queue.length > 0) {
+                let html = '';
+                data.queue.forEach((item, i) => {
+                    const isUser = item.is_user ? 'user-row' : '';
+                    const statusText = item.status.charAt(0).toUpperCase() + item.status.slice(1);
+                    const statusClass = `status-${item.status}`;
+                    const barber = item.barber_fname || 'Any';
+                    
+                    html += `
+                        <div class="queue-item ${isUser}">
+                            <div class="q-pos">#${i+1}</div>
+                            <div class="q-name">${item.user_name} ${item.is_user ? '<span class="text-primary">(You)</span>' : ''}</div>
+                            <div class="q-info">${item.service_name}</div>
+                            <div class="q-info">${barber}</div>
+                            <div class="q-status">
+                                <span class="badge-status ${statusClass}">${statusText}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                list.innerHTML = html;
+            } else {
+                list.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-day fa-3x mb-3 text-muted"></i>
+                        <p class="text-muted">No appointments scheduled for this day.</p>
+                    </div>
+                `;
+            }
+        } catch (e) { console.error(e); }
+    }
+</script>
+
+<?php include '../includes/footer.php'; ?>

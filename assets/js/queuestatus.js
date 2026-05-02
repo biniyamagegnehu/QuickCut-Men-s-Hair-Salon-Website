@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Permission default/undetermined: redirect to dedicated page to request permission
                 try {
-                    window.location.href = '../notifications/notificationenabled.php';
+                    window.location.href = 'notificationenabled.html';
                 } catch (err) {
                     // Fallback to in-place request if redirect fails
                     this.toggleNotifications();
@@ -670,71 +670,58 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         simulateWebSocketConnection() {
-            // Simulate receiving real-time updates from server
+            this.fetchQueueFromServer();
             setInterval(() => {
-                // Re-evaluate business hours periodically in case the page or time changed
                 try {
                     this.businessStatus = this.checkBusinessHours();
                 } catch (e) {
-                    // ignore parsing errors and fall back to previous status
                 }
 
                 if (this.realTimeUpdatesEnabled && this.businessStatus.isOpen) {
-                    this.receiveRealTimeUpdate();
+                    this.fetchQueueFromServer();
                 }
-            }, 5000); // Simulate updates every 5 seconds
+            }, 5000); // Check updates every 5 seconds
         }
         
-        receiveRealTimeUpdate() {
-            const updates = [
-                { type: 'position_change', value: -1 },
-                { type: 'queue_length', value: 1 },
-                { type: 'service_completed', value: null },
-                { type: 'new_customer', value: null },
-                { type: 'emergency_update', value: 'Barber running late' }
-            ];
-            
-            const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
-            
-            switch (randomUpdate.type) {
-                case 'position_change':
-                    if (this.peopleAhead > 0) {
-                        this.peopleAhead--;
-                        this.currentPosition--;
-                        this.logQueueEvent('POSITION_IMPROVED', {
-                            newPosition: this.currentPosition,
-                            peopleAhead: this.peopleAhead
-                        });
-                    }
-                    break;
+        fetchQueueFromServer() {
+            // Fetch total queue and user position in parallel
+            Promise.all([
+                fetch('get_queue.php').then(res => res.json()),
+                fetch('get_position.php').then(res => res.json())
+            ])
+            .then(([queueData, positionData]) => {
+                if (queueData.success) {
+                    this.totalQueue = queueData.queue.length;
                     
-                case 'queue_length':
-                    if (this.totalQueue < REAL_TIME_CONFIG.MAX_QUEUE_SIZE) {
-                        this.totalQueue++;
-                        this.logQueueEvent('QUEUE_LENGTH_CHANGE', {
-                            newLength: this.totalQueue,
-                            direction: 'increase'
-                        });
+                    if (positionData.success) {
+                        const newPosition = positionData.position;
+                        if (this.currentPosition !== newPosition) {
+                            this.peopleAhead = positionData.people_ahead;
+                            this.currentPosition = newPosition;
+                            this.estimatedWait = positionData.estimated_wait_time_minutes;
+                            
+                            if (this.notificationManager && this.peopleAhead < 3 && newPosition > 0) {
+                                this.notificationManager.sendQueueNotification(
+                                    'Position Updated',
+                                    `You're now #${this.currentPosition} in line. Estimated wait: ${this.estimatedWait} minutes`,
+                                    this.currentPosition
+                                );
+                            }
+                        }
+                    } else {
+                        // User might not have a booking or it was completed
+                        // Reset if server explicitly states user is not in queue
+                        if (positionData.message === 'User is not currently waiting in the queue.') {
+                            this.currentPosition = 0;
+                            this.peopleAhead = 0;
+                            this.estimatedWait = 0;
+                        }
                     }
-                    break;
-                    
-                case 'emergency_update':
-                    this.showEmergencyUpdate(randomUpdate.value);
-                    break;
-            }
-            
-            this.calculateEstimatedWait();
-            this.updateDisplay();
-            this.saveCurrentState();
-            
-            // Send notification for position changes
-            if (this.notificationManager && this.peopleAhead < 3) {
-                this.notificationManager.sendQueueNotification(
-                    'Position Updated',
-                    `You're now #${this.currentPosition} in line. Estimated wait: ${this.estimatedWait} minutes`,
-                    this.currentPosition
-                );
-            }
+                    this.updateDisplay();
+                    this.saveCurrentState();
+                }
+            })
+            .catch(err => console.error('Queue fetch error:', err));
         }
         
         loadSavedData() {
