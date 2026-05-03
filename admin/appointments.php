@@ -1,3 +1,7 @@
+<?php
+require_once '../admin_auth.php';
+check_admin_page();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,14 +15,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- CSS Files -->
-    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="css/appointments.css">
 </head>
 <body>
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-header">
-            <a href="dashboard.php" class="sidebar-brand">
+            <a href="../dashboard/dashboard.php" class="sidebar-brand">
                 <i class="fas fa-cut me-2"></i>QuickCut Admin
             </a>
         </div>
@@ -26,43 +30,49 @@
         <div class="sidebar-menu">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link" href="dashboard.php">
+                    <a class="nav-link" href="../dashboard/dashboard.php">
                         <i class="fas fa-tachometer-alt"></i>
                         Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="appointments.php">
+                    <a class="nav-link active" href="../dashboard/appointments.php">
                         <i class="fas fa-calendar-alt"></i>
                         Appointments
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="barbers.php">
+                    <a class="nav-link" href="../dashboard/barbers.php">
                         <i class="fas fa-user-tie"></i>
                         Barbers
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="services.php">
+                    <a class="nav-link" href="../management/services.php">
                         <i class="fas fa-cut"></i>
                         Services
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="customers.php">
+                    <a class="nav-link" href="../management/working_hours.php">
+                        <i class="fas fa-clock"></i>
+                        Working Hours
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../dashboard/customers.php">
                         <i class="fas fa-users"></i>
                         Customers
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="reports.php">
+                    <a class="nav-link" href="../dashboard/reports.php">
                         <i class="fas fa-chart-bar"></i>
                         Reports
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="settings.php">
+                    <a class="nav-link" href="../settings.php">
                         <i class="fas fa-cog"></i>
                         Settings
                     </a>
@@ -79,7 +89,7 @@
                     <h6 class="mb-0">Admin User</h6>
                     <small class="text-muted">Administrator</small>
                 </div>
-                <a href="../welcome.php" class="logout-btn ms-auto" title="Logout">
+                <a href="../../auth/logout.php" class="logout-btn ms-auto" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
@@ -179,7 +189,9 @@
                                     <th>Service</th>
                                     <th>Barber</th>
                                     <th>Date & Time</th>
-                                    <th>Amount</th>
+                                    <th>Total</th>
+                                    <th>Paid</th>
+                                    <th>Payment</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -254,7 +266,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript Files -->
-    <script src="js/common.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/common.js?v=1.0.1"></script>
     <script src="js/appointments.js"></script>
 </body>
 </html>
+
