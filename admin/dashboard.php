@@ -1,3 +1,7 @@
+<?php
+require_once '../admin_auth.php';
+check_admin_page();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,14 +17,19 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- CSS Files -->
-    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/notifications.css">
+    <?php require_once '../../includes/config.php'; ?>
+    <script>
+        const BASE_URL = '<?php echo BASE_URL; ?>';
+    </script>
 </head>
 <body>
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-header">
-            <a href="dashboard.php" class="sidebar-brand">
+            <a href="../dashboard/dashboard.php" class="sidebar-brand">
                 <i class="fas fa-cut me-2"></i>QuickCut Admin
             </a>
         </div>
@@ -28,43 +37,49 @@
         <div class="sidebar-menu">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" href="dashboard.php">
+                    <a class="nav-link active" href="../dashboard/dashboard.php">
                         <i class="fas fa-tachometer-alt"></i>
                         Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="appointments.php">
+                    <a class="nav-link" href="../dashboard/appointments.php">
                         <i class="fas fa-calendar-alt"></i>
                         Appointments
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="barbers.php">
+                    <a class="nav-link" href="../dashboard/barbers.php">
                         <i class="fas fa-user-tie"></i>
                         Barbers
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="services.php">
+                    <a class="nav-link" href="../management/services.php">
                         <i class="fas fa-cut"></i>
                         Services
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="customers.php">
+                    <a class="nav-link" href="../management/working_hours.php">
+                        <i class="fas fa-clock"></i>
+                        Working Hours
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../dashboard/customers.php">
                         <i class="fas fa-users"></i>
                         Customers
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="reports.php">
+                    <a class="nav-link" href="../dashboard/reports.php">
                         <i class="fas fa-chart-bar"></i>
                         Reports
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="settings.php">
+                    <a class="nav-link" href="../settings.php">
                         <i class="fas fa-cog"></i>
                         Settings
                     </a>
@@ -81,7 +96,7 @@
                     <h6 class="mb-0">Admin User</h6>
                     <small class="text-muted">Administrator</small>
                 </div>
-                <a href="../welcome.php" class="logout-btn ms-auto" title="Logout">
+                <a href="../../auth/logout.php" class="logout-btn ms-auto" title="Logout" id="nav-logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
@@ -100,10 +115,31 @@
                 <input type="text" placeholder="Search..." id="global-search">
             </div>
             <div class="top-nav-items">
-                <button class="notification-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge" id="notification-count">3</span>
-                </button>
+                <div class="notification-bell-wrapper" id="notification-bell-wrapper">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notification-badge">0</span>
+                    </button>
+                    
+                    <div class="notification-dropdown" id="notification-dropdown" style="top: 40px; right: 0;">
+                        <div class="notification-header">
+                            <h6 class="text-white">Admin Alerts</h6>
+                            <a href="#" class="mark-all-read" id="mark-all-read-btn">Mark all as read</a>
+                        </div>
+                        <div class="unread-status p-2 px-3 small text-muted border-bottom">
+                            <span id="unread-count-text">0 New</span>
+                        </div>
+                        <div class="notification-list" id="notification-list">
+                            <div class="no-notifications">
+                                <i class="fas fa-bell-slash"></i>
+                                <p>Loading alerts...</p>
+                            </div>
+                        </div>
+                        <div class="notification-footer">
+                            <a href="../dashboard/reports.php">View Activity Log</a>
+                        </div>
+                    </div>
+                </div>
                 <button class="fullscreen-btn">
                     <i class="fas fa-expand"></i>
                 </button>
@@ -160,7 +196,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h5 class="card-title mb-0">Today's Appointments</h5>
-                            <a href="appointments.php" class="btn btn-sm btn-primary">View All</a>
+                            <a href="../dashboard/appointments.php" class="btn btn-sm btn-primary">View All</a>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -192,7 +228,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript Files -->
-    <script src="js/common.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/common.js?v=1.0.1"></script>
     <script src="js/dashboard.js"></script>
+    <script src="../../assets/js/notifications.js"></script>
 </body>
 </html>
+
