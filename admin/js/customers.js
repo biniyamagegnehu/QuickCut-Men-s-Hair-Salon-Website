@@ -14,66 +14,65 @@ function loadCustomers() {
     const tbody = document.getElementById('customers-list');
     if (!tbody) return;
     
-    if (customers.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="8" class="text-center py-4">
-                    <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <h4>No Customers Found</h4>
-                        <p>Add your first customer to get started</p>
-                    </div>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    tbody.innerHTML = '';
-    
-    customers.forEach(customer => {
-        const row = document.createElement('tr');
-        let statusClass = '';
-        let statusText = '';
-        
-        switch(customer.status) {
-            case 'active': statusClass = 'status-active'; statusText = 'Active'; break;
-            case 'new': statusClass = 'status-new'; statusText = 'New'; break;
-            case 'vip': statusClass = 'status-vip'; statusText = 'VIP'; break;
-            case 'inactive': statusClass = 'status-inactive'; statusText = 'Inactive'; break;
-            default: statusClass = 'status-inactive'; statusText = 'Inactive';
-        }
-        
-        row.innerHTML = `
-            <td>${customer.id}</td>
-            <td>
-                <strong>${customer.firstName} ${customer.lastName}</strong>
-                <br>
-                <small class="text-muted">${customer.address || 'No address'}</small>
-            </td>
-            <td><span class="phone-display">${customer.phone}</span></td>
-            <td>${customer.email || '-'}</td>
-            <td><span class="appointments-count">${customer.appointments}</span></td>
-            <td><span class="total-spent">${formatCurrency(customer.totalSpent)}</span></td>
-            <td>
-                <span class="customer-status ${statusClass}">${statusText}</span>
-            </td>
-            <td>
-                <div class="action-buttons">
-                    <button class="action-btn view" onclick="viewCustomer(${customer.id})">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="action-btn edit" onclick="editCustomer(${customer.id})">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="action-btn delete" onclick="deleteCustomer(${customer.id})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
+    fetch('get_customers.php')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) return;
+            const fetchedCustomers = data.customers;
+            
+            if (fetchedCustomers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <div class="empty-state">
+                                <i class="fas fa-users"></i>
+                                <h4>No Customers Found</h4>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            fetchedCustomers.forEach(customer => {
+                const row = document.createElement('tr');
+                
+                // Assuming status is not tracked directly in DB or we use default
+                const statusClass = 'status-active';
+                const statusText = 'Active';
+                
+                row.innerHTML = `
+                    <td>${customer.id}</td>
+                    <td>
+                        <strong>${customer.name}</strong>
+                    </td>
+                    <td><span class="phone-display">${customer.phone || '-'}</span></td>
+                    <td>${customer.email || '-'}</td>
+                    <td><span class="appointments-count">-</span></td>
+                    <td><span class="total-spent">-</span></td>
+                    <td>
+                        <span class="customer-status ${statusClass}">${statusText}</span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn view" disabled>
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn edit" disabled>
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete" disabled>
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        })
+        .catch(err => console.error(err));
 }
 
 // Setup customer event listeners

@@ -1,135 +1,227 @@
-/* barbers.css - Barbers specific styles */
-
-/* Barbers Grid */
-#barbers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+/* barbers.css - Professional Version */
+:root {
+    --primary-soft: rgba(255, 107, 53, 0.1);
+    --success-soft: rgba(40, 167, 69, 0.1);
+    --warning-soft: rgba(255, 193, 7, 0.1);
+    --info-soft: rgba(13, 110, 253, 0.1);
 }
 
+/* Stats Overview */
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.bg-primary-soft { background: var(--primary-soft); }
+.bg-success-soft { background: var(--success-soft); }
+.bg-warning-soft { background: var(--warning-soft); }
+.bg-info-soft { background: var(--info-soft); }
+
+.stat-details h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.stat-details p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Filter Section */
+.filter-section {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Barbers Grid */
 .barber-card {
     background: white;
-    border: 1px solid #eee;
-    border-radius: 15px;
+    border: 1px solid #f0f0f0;
+    border-radius: 20px;
     overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    height: 100%;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
 .barber-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-10px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
     border-color: var(--primary-color);
 }
 
 .barber-header {
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+    background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+    border-bottom: 1px solid #f8f8f8;
+}
+
+.barber-avatar-wrapper {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 1.25rem;
 }
 
 .barber-avatar {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 107, 53, 0.2);
+    width: 100%;
+    height: 100%;
+    background: #f8f9fa;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 2.5rem;
     color: var(--primary-color);
-    font-size: 2rem;
-    flex-shrink: 0;
+    border: 3px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.barber-info {
-    flex: 1;
+.status-indicator {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+
+.bg-active { background: #28a745; }
+.bg-inactive { background: #6c757d; }
+.bg-vacation { background: #ffc107; }
 
 .barber-info h5 {
-    margin-bottom: 0.5rem;
-    color: var(--secondary-color);
+    margin: 0;
+    font-weight: 700;
+    color: #1a1a1a;
+    font-size: 1.2rem;
 }
 
 .barber-info p {
-    color: var(--secondary-color);
-    margin-bottom: 0.5rem;
+    margin: 0.25rem 0 0.75rem;
+    color: var(--primary-color);
     font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.barber-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
-    font-size: 0.85rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.status-active { background: rgba(40, 167, 69, 0.1); color: var(--success-color); }
-.status-inactive { background: rgba(108, 117, 125, 0.1); color: var(--secondary-color); }
-.status-vacation { background: rgba(255, 193, 7, 0.1); color: var(--warning-color); }
+.barber-status-pill {
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
 
 .barber-body {
     padding: 1.5rem;
 }
 
-.barber-stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+.barber-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
 }
 
-.barber-stat {
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.meta-item i {
+    width: 16px;
+    color: #999;
+}
+
+.barber-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+    background: #fcfcfc;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.stat-item {
     text-align: center;
 }
 
-.barber-stat .number {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
+.stat-item .val {
     display: block;
+    font-weight: 700;
+    color: #1a1a1a;
+    font-size: 1.1rem;
 }
 
-.barber-stat .label {
-    font-size: 0.85rem;
-    color: var(--secondary-color);
-    opacity: 0.8;
+.stat-item .lbl {
+    display: block;
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 600;
 }
 
 .barber-actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 .barber-actions .btn {
-    flex: 1;
+    border-radius: 10px;
+    padding: 0.6rem;
+    font-weight: 600;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-    #barbers-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
+/* Modal Customizations */
+.custom-modal .form-label {
+    font-weight: 600;
+    color: #444;
+    font-size: 0.9rem;
 }
 
-@media (max-width: 768px) {
-    #barbers-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .barber-avatar {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
-    }
-    
-    .barber-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.custom-modal .form-control, .custom-modal .form-select {
+    border-radius: 10px;
+    padding: 0.75rem;
+    border-color: #eee;
 }
+
+.custom-modal .form-control:focus {
+    box-shadow: 0 0 0 4px var(--primary-soft);
+    border-color: var(--primary-color);
+}

@@ -1,27 +1,83 @@
 // common.js - Common JavaScript functions for all admin pages
+if (typeof BASE_URL === 'undefined') {
+    // Determine BASE_URL dynamically or fallback to one level up
+    window.BASE_URL = window.location.origin + window.location.pathname.split('/').slice(0, -2).join('/') + '/';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     initCommonFeatures();
 });
 
 // Global data storage
 let appointments = JSON.parse(localStorage.getItem('quickcut-appointments')) || [];
-let barbers = JSON.parse(localStorage.getItem('quickcut-barbers')) || [];
-let services = JSON.parse(localStorage.getItem('quickcut-services')) || [];
-let customers = JSON.parse(localStorage.getItem('quickcut-customers')) || [];
+let barbers = [];
+let services = [];
+let customers = [];
 let notifications = JSON.parse(localStorage.getItem('quickcut-notifications')) || [];
-let currentPage = window.location.pathname.split('/').pop().replace('.php', '');
+let currentPage = window.location.pathname.split('/').pop().replace('.php', '').replace('.php', '');
+
+// Fetch global data from database
+function fetchGlobalData() {
+    // Fetch Barbers
+    fetch('get_barbers.php')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.barbers = data.barbers.map(b => ({
+                    id: b.id,
+                    firstName: b.first_name,
+                    lastName: b.last_name,
+                    email: b.email,
+                    phone: b.phone,
+                    specialty: b.specialty,
+                    rate: b.rate,
+                    status: b.status,
+                    appointments: b.appointments,
+                    earnings: b.earnings,
+                    rating: b.rating
+                }));
+                // Trigger any page-specific updates if needed
+                if (typeof populateBarberFilter === 'function') populateBarberFilter();
+                if (typeof populateAppointmentDropdowns === 'function') populateAppointmentDropdowns();
+            }
+        });
+
+    // Fetch Services
+    fetch('get_services.php')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.services = data.services;
+                if (typeof populateAppointmentDropdowns === 'function') populateAppointmentDropdowns();
+            }
+        });
+
+    // Fetch Customers (if endpoint exists, otherwise fallback)
+    fetch('get_customers.php')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.customers = data.customers;
+                if (typeof populateAppointmentDropdowns === 'function') populateAppointmentDropdowns();
+            }
+        })
+        .catch(() => {
+            // Fallback to localStorage for now if get_customers.php doesn't exist
+            window.customers = JSON.parse(localStorage.getItem('quickcut-customers')) || [];
+        });
+}
 
 // Initialize common features
 function initCommonFeatures() {
     // Skip authentication check for login page
-    if (window.location.pathname.includes('login.php')) {
+    if (window.location.pathname.includes('login.php') || window.location.pathname.includes('login.php')) {
         return;
     }
     
     // Check if user is logged in
     const isLoggedIn = localStorage.getItem('quickcut-admin-loggedin') === 'true';
     if (!isLoggedIn) {
-        window.location.href = 'login.php';
+        window.location.href = '../auth/login.php';
         return;
     }
     
@@ -34,8 +90,8 @@ function initCommonFeatures() {
     document.addEventListener('keypress', updateLastActivity);
     document.addEventListener('scroll', updateLastActivity);
     
-    // Load sample data if empty
-    if (appointments.length === 0) loadSampleData();
+    // Fetch live data from DB
+    fetchGlobalData();
     
     // Setup event listeners
     setupCommonEventListeners();
@@ -47,8 +103,69 @@ function initCommonFeatures() {
     // Mark active nav link
     markActiveNavLink();
     
+    // Initialize Live Notifications
+    initLiveNotifications();
+
     // Show welcome notification (only once per session)
     showWelcomeNotification();
+}
+
+/**
+ * Dynamically initializes the live notification system on admin pages
+ */
+function initLiveNotifications() {
+    const navItems = document.querySelector('.top-nav-items');
+    const oldBtn = document.querySelector('.notification-btn');
+    
+    if (!navItems || !oldBtn || document.getElementById('notification-bell-wrapper')) return;
+
+    // Create the wrapper and dropdown HTML
+    const wrapper = document.createElement('div');
+    wrapper.className = 'notification-bell-wrapper';
+    wrapper.id = 'notification-bell-wrapper';
+    wrapper.innerHTML = `
+        <button class="notification-btn">
+            <i class="fas fa-bell"></i>
+            <span class="badge" id="notification-badge">0</span>
+        </button>
+        <div class="notification-dropdown" id="notification-dropdown" style="top: 40px; right: 0;">
+            <div class="notification-header">
+                <h6 class="text-white">Admin Alerts</h6>
+                <a href="#" class="mark-all-read" id="mark-all-read-btn">Mark all as read</a>
+            </div>
+            <div class="unread-status p-2 px-3 small text-muted border-bottom">
+                <span id="unread-count-text">0 New</span>
+            </div>
+            <div class="notification-list" id="notification-list">
+                <div class="no-notifications">
+                    <i class="fas fa-bell-slash"></i>
+                    <p>Loading alerts...</p>
+                </div>
+            </div>
+            <div class="notification-footer">
+                <a href="reports.php">View Activity Log</a>
+            </div>
+        </div>
+    `;
+
+    // Replace old button with new wrapper
+    oldBtn.parentNode.replaceChild(wrapper, oldBtn);
+
+    // Load CSS if not already present
+    if (!document.getElementById('notifications-css')) {
+        const link = document.createElement('link');
+        link.id = 'notifications-css';
+        link.rel = 'stylesheet';
+        link.href = '../assets/css/notifications.css';
+        document.head.appendChild(link);
+    }
+
+    // Load Notifications JS if not already present
+    if (!document.querySelector('script[src*="notifications.js"]')) {
+        const script = document.createElement('script');
+        script.src = '../assets/js/notifications.js';
+        document.body.appendChild(script);
+    }
 }
 
 // Load sample data
@@ -992,18 +1109,18 @@ function confirmLogout() {
 
 // Logout function
 function logout() {
-    // Clear authentication data
+    // Clear authentication data (local storage)
     localStorage.removeItem('quickcut-admin-loggedin');
     localStorage.removeItem('quickcut-admin-username');
     localStorage.removeItem('quickcut-admin-lastactivity');
     localStorage.removeItem('quickcut-admin-logintime');
     
     // Show logout notification
-    showNotification('You have been logged out successfully. Redirecting to login...', 'info', 2000);
+    showNotification('You have been logged out successfully. Redirecting...', 'info', 2000);
     
-    // Redirect to login page after delay
+    // Redirect to server-side logout to destroy PHP session
     setTimeout(() => {
-        window.location.href = 'login.php';
+        window.location.href = '../auth/logout.php';
     }, 1500);
 }
 

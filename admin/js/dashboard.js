@@ -5,9 +5,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize dashboard
 function initDashboard() {
-    // Update stats cards
-    updateStatsCards();
-    
+    // Update stats cards from API
+    fetch('dashboard_stats.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateStatsCards(data.stats);
+            } else {
+                if (data.message && data.message.includes('Unauthorized')) {
+                    window.location.href = '../auth/login.php';
+                }
+            }
+        })
+        .catch(err => console.error(err));
+        
     // Load today's appointments
     loadTodayAppointments();
     
@@ -16,16 +27,7 @@ function initDashboard() {
 }
 
 // Update stats cards
-function updateStatsCards() {
-    const today = new Date().toISOString().split('T')[0];
-    const todayApps = appointments.filter(a => a.date === today);
-    const todayRevenue = todayApps.reduce((sum, a) => sum + a.amount, 0);
-    const activeBarbersCount = barbers.filter(b => b.status === 'active').length;
-    const currentQueue = appointments.filter(a => 
-        (a.status === 'scheduled' || a.status === 'confirmed') && 
-        a.date === today
-    ).length;
-    
+function updateStatsCards(stats) {
     const statsCards = document.getElementById('stats-cards');
     statsCards.innerHTML = `
         <div class="col-xl-3 col-md-6">
@@ -34,7 +36,7 @@ function updateStatsCards() {
                     <i class="fas fa-calendar-check"></i>
                 </div>
                 <div class="stats-info">
-                    <h3 id="today-appointments">${todayApps.length}</h3>
+                    <h3 id="today-appointments">${stats.total_appointments}</h3>
                     <p>Today's Appointments</p>
                 </div>
             </div>
@@ -45,42 +47,63 @@ function updateStatsCards() {
                     <i class="fas fa-user-clock"></i>
                 </div>
                 <div class="stats-info">
-                    <h3 id="current-queue">${currentQueue}</h3>
-                    <p>Current Queue</p>
+                    <h3 id="current-queue">${stats.waiting_customers}</h3>
+                    <p>Waiting Customers</p>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="stats-card">
                 <div class="stats-icon bg-warning">
-                    <i class="fas fa-money-bill-wave"></i>
+                    <i class="fas fa-check-double"></i>
                 </div>
                 <div class="stats-info">
-                    <h3 id="today-revenue">${formatCurrency(todayRevenue)}</h3>
-                    <p>Today's Revenue</p>
+                    <h3 id="today-completed">${stats.completed_appointments}</h3>
+                    <p>Completed Today</p>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="stats-card">
                 <div class="stats-icon bg-info">
-                    <i class="fas fa-users"></i>
+                    <i class="fas fa-cut"></i>
                 </div>
                 <div class="stats-info">
-                    <h3 id="active-barbers">${activeBarbersCount}</h3>
-                    <p>Active Barbers</p>
+                    <h3 id="active-customer" style="font-size: 1.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${stats.active_customer || 'None'}">${stats.active_customer || 'None'}</h3>
+                    <p>Active Customer</p>
                 </div>
             </div>
         </div>
     `;
 }
 
-// Load today's appointments
+// Load today's appointments from database
 function loadTodayAppointments() {
-    const todayApps = getTodayAppointments();
+    const tbody = document.getElementById('today-appointments-list');
+    if (!tbody) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    fetch(`get_appointments.php?date=${today}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderTodayAppointments(data.appointments);
+            } else {
+                console.error('Error loading appointments:', data.message);
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Error loading data</td></tr>';
+            }
+        })
+        .catch(err => {
+            console.error('Fetch error:', err);
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Server error</td></tr>';
+        });
+}
+
+function renderTodayAppointments(appointments) {
     const tbody = document.getElementById('today-appointments-list');
     
-    if (todayApps.length === 0) {
+    if (appointments.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="7" class="text-center py-4">
@@ -94,31 +117,33 @@ function loadTodayAppointments() {
     
     tbody.innerHTML = '';
     
-    todayApps.forEach(appointment => {
+    appointments.forEach(app => {
         const row = document.createElement('tr');
+        // Format time to 12h if needed, or use as is
+        const timeStr = app.appointment_time;
+        
         row.innerHTML = `
-            <td><strong>${appointment.time}</strong></td>
-            <td>${appointment.customer}</td>
-            <td><span class="phone-display">${appointment.phone}</span></td>
-            <td>${appointment.service}</td>
-            <td>${appointment.barber}</td>
+            <td><strong>${timeStr}</strong></td>
+            <td>${app.customer_name}</td>
+            <td><span class="phone-display">${app.customer_phone}</span></td>
+            <td>${app.service_name}</td>
+            <td>${app.barber_name || 'Unassigned'}</td>
             <td>
-                <select class="status-dropdown ${appointment.status}" 
-                        data-id="${appointment.id}"
-                        onchange="updateAppointmentStatus(${appointment.id}, this.value)">
-                    <option value="scheduled" ${appointment.status === 'scheduled' ? 'selected' : ''}>Scheduled</option>
-                    <option value="confirmed" ${appointment.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
-                    <option value="in-progress" ${appointment.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
-                    <option value="completed" ${appointment.status === 'completed' ? 'selected' : ''}>Completed</option>
-                    <option value="cancelled" ${appointment.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                <select class="status-dropdown ${app.status}" 
+                        onchange="updateAppointmentStatus(${app.id}, this.value)">
+                    <option value="scheduled" ${app.status === 'scheduled' ? 'selected' : ''}>Scheduled</option>
+                    <option value="confirmed" ${app.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                    <option value="in-progress" ${app.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="completed" ${app.status === 'completed' ? 'selected' : ''}>Completed</option>
+                    <option value="cancelled" ${app.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
                 </select>
             </td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn edit" onclick="editAppointment(${appointment.id})">
+                    <button class="action-btn edit" onclick="window.location.href='appointments.php?id=${app.id}'">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="action-btn delete" onclick="deleteAppointment(${appointment.id})">
+                    <button class="action-btn delete" onclick="deleteAppointment(${app.id})">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
