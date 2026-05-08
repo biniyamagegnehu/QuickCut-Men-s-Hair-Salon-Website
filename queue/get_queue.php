@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../includes/db.php';
-
+//commit     
 header('Content-Type: application/json');
 
 // Get date from query parameter or default to today
